@@ -1,0 +1,16 @@
+[
+  {"id":"repeated-auth", "query":"Multiple unsuccessful remote shell authentications", "expected_ids":["AUTH-002"]},
+  {"id":"successful-auth", "query":"A successful SSH login following repeated failures", "expected_ids":["AUTH-003"]},
+  {"id":"dns-domain", "query":"Which DNS domain was requested?", "expected_ids":["DNS-001"]},
+  {"id":"port-pattern", "query":"TCP connection attempts to many destination ports", "expected_ids":["NET-001"]},
+  {"id":"backup-result", "query":"Did the scheduled backup finish without errors?", "expected_ids":["SAFE-001"]},
+  {"id":"failed-auth-events", "query":"Show SSH authentication failures", "expected_ids":["AUTH-001","AUTH-002"]},
+  {"id":"five-failures", "query":"Which event reports five failed logins in one minute?", "expected_ids":["AUTH-002"]},
+  {"id":"inert-adversarial-text", "query":"Find the inert adversarial log text", "expected_ids":["UNTRUSTED-001"]},
+  {"id":"dns-source", "query":"DNS activity from 198.51.100.20", "expected_ids":["DNS-001"]},
+  {"id":"backup-completion", "query":"Routine backup completed successfully", "expected_ids":["SAFE-001"]},
+  {"id":"unrelated-topic", "query":"quantum pineapple tractor recipe", "expected_ids":[]},
+  {"id":"missing-endpoint", "query":"Windows Defender malware quarantine result on endpoint WIN-42", "expected_ids":[]},
+  {"id":"missing-http", "query":"HTTP POST response status for /checkout payment request", "expected_ids":[]},
+  {"id":"near-match-absent-account", "query":"SSH login failures for account payroll-root from 203.0.113.99", "expected_ids":[]}
+]
