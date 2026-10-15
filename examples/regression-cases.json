@@ -1,0 +1,266 @@
+[
+  {
+    "id": "positive-001",
+    "query": "For 192.0.2.1, remote shell login was denied?",
+    "expected_ids": [
+      "REG-001"
+    ]
+  },
+  {
+    "id": "positive-002",
+    "query": "For 192.0.2.2, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-002"
+    ]
+  },
+  {
+    "id": "positive-003",
+    "query": "For 192.0.2.3, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-003"
+    ]
+  },
+  {
+    "id": "positive-004",
+    "query": "For 192.0.2.4, web access was refused?",
+    "expected_ids": [
+      "REG-004"
+    ]
+  },
+  {
+    "id": "positive-005",
+    "query": "For 192.0.2.5, remote shell login was denied?",
+    "expected_ids": [
+      "REG-005"
+    ]
+  },
+  {
+    "id": "positive-006",
+    "query": "For 192.0.2.6, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-006"
+    ]
+  },
+  {
+    "id": "positive-007",
+    "query": "For 192.0.2.7, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-007"
+    ]
+  },
+  {
+    "id": "positive-008",
+    "query": "For 192.0.2.8, web access was refused?",
+    "expected_ids": [
+      "REG-008"
+    ]
+  },
+  {
+    "id": "positive-009",
+    "query": "For 192.0.2.9, remote shell login was denied?",
+    "expected_ids": [
+      "REG-009"
+    ]
+  },
+  {
+    "id": "positive-010",
+    "query": "For 192.0.2.10, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-010"
+    ]
+  },
+  {
+    "id": "positive-011",
+    "query": "For 192.0.2.11, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-011"
+    ]
+  },
+  {
+    "id": "positive-012",
+    "query": "For 192.0.2.12, web access was refused?",
+    "expected_ids": [
+      "REG-012"
+    ]
+  },
+  {
+    "id": "positive-013",
+    "query": "For 192.0.2.13, remote shell login was denied?",
+    "expected_ids": [
+      "REG-013"
+    ]
+  },
+  {
+    "id": "positive-014",
+    "query": "For 192.0.2.14, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-014"
+    ]
+  },
+  {
+    "id": "positive-015",
+    "query": "For 192.0.2.15, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-015"
+    ]
+  },
+  {
+    "id": "positive-016",
+    "query": "For 192.0.2.16, web access was refused?",
+    "expected_ids": [
+      "REG-016"
+    ]
+  },
+  {
+    "id": "positive-017",
+    "query": "For 192.0.2.17, remote shell login was denied?",
+    "expected_ids": [
+      "REG-017"
+    ]
+  },
+  {
+    "id": "positive-018",
+    "query": "For 192.0.2.18, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-018"
+    ]
+  },
+  {
+    "id": "positive-019",
+    "query": "For 192.0.2.19, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-019"
+    ]
+  },
+  {
+    "id": "positive-020",
+    "query": "For 192.0.2.20, web access was refused?",
+    "expected_ids": [
+      "REG-020"
+    ]
+  },
+  {
+    "id": "positive-021",
+    "query": "For 192.0.2.21, remote shell login was denied?",
+    "expected_ids": [
+      "REG-021"
+    ]
+  },
+  {
+    "id": "positive-022",
+    "query": "For 192.0.2.22, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-022"
+    ]
+  },
+  {
+    "id": "positive-023",
+    "query": "For 192.0.2.23, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-023"
+    ]
+  },
+  {
+    "id": "positive-024",
+    "query": "For 192.0.2.24, web access was refused?",
+    "expected_ids": [
+      "REG-024"
+    ]
+  },
+  {
+    "id": "positive-025",
+    "query": "For 192.0.2.25, remote shell login was denied?",
+    "expected_ids": [
+      "REG-025"
+    ]
+  },
+  {
+    "id": "positive-026",
+    "query": "For 192.0.2.26, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-026"
+    ]
+  },
+  {
+    "id": "positive-027",
+    "query": "For 192.0.2.27, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-027"
+    ]
+  },
+  {
+    "id": "positive-028",
+    "query": "For 192.0.2.28, web access was refused?",
+    "expected_ids": [
+      "REG-028"
+    ]
+  },
+  {
+    "id": "positive-029",
+    "query": "For 192.0.2.29, remote shell login was denied?",
+    "expected_ids": [
+      "REG-029"
+    ]
+  },
+  {
+    "id": "positive-030",
+    "query": "For 192.0.2.30, a domain lookup was requested?",
+    "expected_ids": [
+      "REG-030"
+    ]
+  },
+  {
+    "id": "positive-031",
+    "query": "For 192.0.2.31, scheduled archive finished without errors?",
+    "expected_ids": [
+      "REG-031"
+    ]
+  },
+  {
+    "id": "positive-032",
+    "query": "For 192.0.2.32, web access was refused?",
+    "expected_ids": [
+      "REG-032"
+    ]
+  },
+  {
+    "id": "absent-001",
+    "query": "What authentication failure came from 203.0.113.1?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-002",
+    "query": "What authentication failure came from 203.0.113.2?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-003",
+    "query": "What authentication failure came from 203.0.113.3?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-004",
+    "query": "What authentication failure came from 203.0.113.4?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-005",
+    "query": "What authentication failure came from 203.0.113.5?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-006",
+    "query": "What authentication failure came from 203.0.113.6?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-007",
+    "query": "What authentication failure came from 203.0.113.7?",
+    "expected_ids": []
+  },
+  {
+    "id": "absent-008",
+    "query": "What authentication failure came from 203.0.113.8?",
+    "expected_ids": []
+  }
+]
