@@ -1,0 +1,32 @@
+{"id": "REG-001", "text": "Synthetic regression: authentication failure from 192.0.2.1; account lab-user-1.", "fields": {"service": "ssh", "source_ip": "192.0.2.1"}}
+{"id": "REG-002", "text": "Synthetic regression: DNS query demo.test from 192.0.2.2; account lab-user-2.", "fields": {"service": "dns", "source_ip": "192.0.2.2"}}
+{"id": "REG-003", "text": "Synthetic regression: backup completed successfully from 192.0.2.3; account lab-user-3.", "fields": {"service": "backup", "source_ip": "192.0.2.3"}}
+{"id": "REG-004", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.4; account lab-user-4.", "fields": {"service": "http", "source_ip": "192.0.2.4"}}
+{"id": "REG-005", "text": "Synthetic regression: authentication failure from 192.0.2.5; account lab-user-5.", "fields": {"service": "ssh", "source_ip": "192.0.2.5"}}
+{"id": "REG-006", "text": "Synthetic regression: DNS query demo.test from 192.0.2.6; account lab-user-6.", "fields": {"service": "dns", "source_ip": "192.0.2.6"}}
+{"id": "REG-007", "text": "Synthetic regression: backup completed successfully from 192.0.2.7; account lab-user-7.", "fields": {"service": "backup", "source_ip": "192.0.2.7"}}
+{"id": "REG-008", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.8; account lab-user-8.", "fields": {"service": "http", "source_ip": "192.0.2.8"}}
+{"id": "REG-009", "text": "Synthetic regression: authentication failure from 192.0.2.9; account lab-user-9.", "fields": {"service": "ssh", "source_ip": "192.0.2.9"}}
+{"id": "REG-010", "text": "Synthetic regression: DNS query demo.test from 192.0.2.10; account lab-user-10.", "fields": {"service": "dns", "source_ip": "192.0.2.10"}}
+{"id": "REG-011", "text": "Synthetic regression: backup completed successfully from 192.0.2.11; account lab-user-11.", "fields": {"service": "backup", "source_ip": "192.0.2.11"}}
+{"id": "REG-012", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.12; account lab-user-12.", "fields": {"service": "http", "source_ip": "192.0.2.12"}}
+{"id": "REG-013", "text": "Synthetic regression: authentication failure from 192.0.2.13; account lab-user-13.", "fields": {"service": "ssh", "source_ip": "192.0.2.13"}}
+{"id": "REG-014", "text": "Synthetic regression: DNS query demo.test from 192.0.2.14; account lab-user-14.", "fields": {"service": "dns", "source_ip": "192.0.2.14"}}
+{"id": "REG-015", "text": "Synthetic regression: backup completed successfully from 192.0.2.15; account lab-user-15.", "fields": {"service": "backup", "source_ip": "192.0.2.15"}}
+{"id": "REG-016", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.16; account lab-user-16.", "fields": {"service": "http", "source_ip": "192.0.2.16"}}
+{"id": "REG-017", "text": "Synthetic regression: authentication failure from 192.0.2.17; account lab-user-17.", "fields": {"service": "ssh", "source_ip": "192.0.2.17"}}
+{"id": "REG-018", "text": "Synthetic regression: DNS query demo.test from 192.0.2.18; account lab-user-18.", "fields": {"service": "dns", "source_ip": "192.0.2.18"}}
+{"id": "REG-019", "text": "Synthetic regression: backup completed successfully from 192.0.2.19; account lab-user-19.", "fields": {"service": "backup", "source_ip": "192.0.2.19"}}
+{"id": "REG-020", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.20; account lab-user-20.", "fields": {"service": "http", "source_ip": "192.0.2.20"}}
+{"id": "REG-021", "text": "Synthetic regression: authentication failure from 192.0.2.21; account lab-user-21.", "fields": {"service": "ssh", "source_ip": "192.0.2.21"}}
+{"id": "REG-022", "text": "Synthetic regression: DNS query demo.test from 192.0.2.22; account lab-user-22.", "fields": {"service": "dns", "source_ip": "192.0.2.22"}}
+{"id": "REG-023", "text": "Synthetic regression: backup completed successfully from 192.0.2.23; account lab-user-23.", "fields": {"service": "backup", "source_ip": "192.0.2.23"}}
+{"id": "REG-024", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.24; account lab-user-24.", "fields": {"service": "http", "source_ip": "192.0.2.24"}}
+{"id": "REG-025", "text": "Synthetic regression: authentication failure from 192.0.2.25; account lab-user-25.", "fields": {"service": "ssh", "source_ip": "192.0.2.25"}}
+{"id": "REG-026", "text": "Synthetic regression: DNS query demo.test from 192.0.2.26; account lab-user-26.", "fields": {"service": "dns", "source_ip": "192.0.2.26"}}
+{"id": "REG-027", "text": "Synthetic regression: backup completed successfully from 192.0.2.27; account lab-user-27.", "fields": {"service": "backup", "source_ip": "192.0.2.27"}}
+{"id": "REG-028", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.28; account lab-user-28.", "fields": {"service": "http", "source_ip": "192.0.2.28"}}
+{"id": "REG-029", "text": "Synthetic regression: authentication failure from 192.0.2.29; account lab-user-29.", "fields": {"service": "ssh", "source_ip": "192.0.2.29"}}
+{"id": "REG-030", "text": "Synthetic regression: DNS query demo.test from 192.0.2.30; account lab-user-30.", "fields": {"service": "dns", "source_ip": "192.0.2.30"}}
+{"id": "REG-031", "text": "Synthetic regression: backup completed successfully from 192.0.2.31; account lab-user-31.", "fields": {"service": "backup", "source_ip": "192.0.2.31"}}
+{"id": "REG-032", "text": "Synthetic regression: HTTP 403 forbidden from 192.0.2.32; account lab-user-32.", "fields": {"service": "http", "source_ip": "192.0.2.32"}}
