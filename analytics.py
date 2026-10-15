@@ -74,7 +74,11 @@ def summarize(
 
     rows = sorted(
         candidates,
-        key=lambda r: (r.get("fields", {}).get("timestamp", "9999"), r["line"]),
+        key=lambda r: (
+            not bool(r.get("fields", {}).get("timestamp")),
+            r.get("fields", {}).get("timestamp", ""),
+            r["line"],
+        ),
     )
     return {
         "status": "analytics_ready",
