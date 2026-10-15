@@ -57,8 +57,9 @@ $env:LOCAL_GGUF_MODEL = (Resolve-Path '.\models\qwen2.5-0.5b-instruct-q4_k_m.ggu
 
 In the UI, select **Local RAG · checked quotes**. Try the SSH sample question.
 See [RUN_WINDOWS.md](RUN_WINDOWS.md) for exact setup, stopping, troubleshooting,
-Linux commands and the developer workflow. Windows runtime validation remains
-pending until CI/local Windows checks run. Do not infer it from Linux tests.
+Linux commands and the developer workflow. Windows and Linux unit-test matrices and actual CPU-model smoke tests have
+passed in CI. See the [real-model run](https://github.com/ar-yan9/security-log-rag-assistant/actions/runs/38766397735).
+This does not prove setup on your particular laptop or performance on real logs.
 
 ## How the pipeline works
 
