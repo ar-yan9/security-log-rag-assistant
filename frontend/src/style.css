@@ -607,3 +607,25 @@ footer p {
     flex-wrap: wrap;
   }
 }
+/* Secondary actions share the workbench controls, including keyboard focus. */
+.results > button,
+.analytics button {
+  border: 1px solid #45605e;
+  background: #172d32;
+  color: #a6ebd7;
+  border-radius: 5px;
+  font: inherit;
+  padding: 10px 14px;
+  min-height: 44px;
+}
+.results > button:hover,
+.analytics button:not(:disabled):hover {
+  background: #23423f;
+}
+.analytics label {
+  font-size: 12px;
+  color: #adbdc4;
+}
+.analytics .analytics-counts code {
+  color: #e5ebed;
+}
