@@ -30,3 +30,12 @@ def test_bounds(tmp_path,text):
 def test_invalid_prefix(tmp_path):
     source=tmp_path/'log';source.write_text('event')
     with pytest.raises(ValueError):normalize(source,tmp_path/'out','../oops')
+
+
+def test_large_source_is_rejected_before_output(tmp_path):
+    from retrieval import MAX_FILE_BYTES
+    source=tmp_path/'large.log';dest=tmp_path/'output'
+    source.write_bytes(b'x'*(MAX_FILE_BYTES+1))
+    with pytest.raises(ValueError,match='2 MiB'):
+        normalize(source,dest)
+    assert not dest.exists()
