@@ -117,3 +117,17 @@ def test_analytics_api_without_model(tmp_path, rows, monkeypatch):
 def test_time_bounds(rows):
     with pytest.raises(ValueError):
         summarize(rows, start="2026-01-02T00:00:00Z", end="2026-01-01T00:00:00Z")
+
+
+def test_latest_valid_year_still_before_undated():
+    dated = {
+        "id": "last",
+        "line": 2,
+        "text": "far future fixture",
+        "fields": metadata({"timestamp": "9999-01-01T00:00:00Z"}),
+    }
+    undated = {"id": "unknown", "line": 1, "text": "no date"}
+    assert [x["event_id"] for x in summarize([undated, dated])["timeline"]] == [
+        "last",
+        "unknown",
+    ]
