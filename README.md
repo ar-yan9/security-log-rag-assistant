@@ -108,6 +108,55 @@ real local-Qwen calls/abstentions. It includes one important limitation: asking
 not actual port numbers. Quote validation establishes provenance, **not answer
 completeness**. Do not count all evidence selections as correct answers.
 
+## Retrieval evaluation with absent-evidence cases
+
+`evaluate.py` now accepts labeled cases and compares the retrieval modes at the
+same thresholds used by the app. It does not run generation. On Windows:
+
+```powershell
+.\.venv\Scripts\python.exe evaluate.py --mode lexical
+.\.venv\Scripts\python.exe evaluate.py --mode semantic
+```
+
+For another **authorized** normalized corpus, use
+`--file local-data/events.jsonl --cases local-data/cases.json`. Each case has a unique `id`, a `query`, and an
+`expected_ids` list. An empty list labels the query as having no relevant event
+in that corpus. Unknown/duplicate event labels are rejected. The optional
+`--limit` (1-10) and `--min-score` are recorded in the output; defaults are k=3,
+lexical=0.05, semantic=0.7. Scores across these two methods are not comparable.
+
+Checked-in [cases](examples/evaluation-cases.json) and actual local run reports:
+[lexical](examples/evaluation-lexical.json),
+[semantic](examples/evaluation-semantic.json). Fourteen hand-written queries
+cover the same seven demo events: ten answerable and four absent-evidence.
+These cases were written after the demo; **they are not held out**.
+
+| Metric at the default threshold, k=3 | Lexical | BGE + Qdrant |
+| --- | ---: | ---: |
+| Answerable hit@1 | 9/10 | 10/10 |
+| Answerable hit@3 | 9/10 | 10/10 |
+| Mean recall@3 | 0.90 | 1.00 |
+| Mean precision@3 | 0.333 | 0.367 |
+| Mean reciprocal rank within top 3 | 0.90 | 1.00 |
+| Correct absent-evidence abstentions | 2/4 | 3/4 |
+| False-evidence rate on absent-evidence queries | 50% | 25% |
+
+Hit@k means at least one labeled relevant event occurs in the returned top k.
+Recall@k is the fraction of all relevant labels retrieved. Precision@k divides
+relevant results by k, including empty result slots. Reciprocal rank is 1/rank
+of the first relevant event, or zero for a miss. Answerable metrics exclude
+absent-evidence cases; false-evidence rate counts absent-evidence queries with
+any retrieved event. A category with no cases reports null, never 100%.
+
+**Known failure:** both modes return SSH events for a query about account
+`payroll-root` and source `203.0.113.99`, although neither is in the corpus.
+Semantic similarity does not enforce exact account/IP constraints. The BGE
+result is not evidence about that account or source. Do not use top-k retrieval
+to assert entity-specific facts without checking the quoted source. Thresholds
+have not been tuned to hide this failure. Four absent-evidence cases are too few
+to estimate a real false-positive rate. These numbers do not evaluate the LLM,
+prompt-injection resistance, incident detection, or production usefulness.
+
 ## Use your own authorized log excerpt
 
 Prefer synthetic data. If you use private logs, get permission and remove
