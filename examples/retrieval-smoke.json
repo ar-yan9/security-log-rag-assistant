@@ -1,0 +1,64 @@
+{
+  "model": "BAAI/bge-small-en-v1.5",
+  "cases": [
+    {
+      "query": "Multiple unsuccessful remote shell authentications",
+      "expected": "AUTH-002",
+      "top_ids": [
+        "AUTH-002",
+        "AUTH-001",
+        "AUTH-003"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query": "A successful SSH login following repeated failures",
+      "expected": "AUTH-003",
+      "top_ids": [
+        "AUTH-003",
+        "AUTH-002",
+        "AUTH-001"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query": "Which DNS domain was requested?",
+      "expected": "DNS-001",
+      "top_ids": [
+        "DNS-001",
+        "AUTH-001",
+        "AUTH-002"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query": "TCP connection attempts to many destination ports",
+      "expected": "NET-001",
+      "top_ids": [
+        "NET-001",
+        "DNS-001",
+        "AUTH-002"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query": "Did the scheduled backup finish without errors?",
+      "expected": "SAFE-001",
+      "top_ids": [
+        "SAFE-001",
+        "AUTH-003",
+        "AUTH-002"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    }
+  ],
+  "hit_at_1": 5,
+  "hit_at_3": 5,
+  "total": 5,
+  "limit": "Five hand-written queries over seven synthetic events. Not held-out or representative of real incident logs."
+}
