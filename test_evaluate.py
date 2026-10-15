@@ -56,8 +56,8 @@ def test_fixture_matches_actual_corpus():
         result = evaluate(index, cases)
         assert result['summary']['answerable_cases'] == 10
         assert result['summary']['unanswerable_cases'] == 4
-        # Near-match text can retrieve irrelevant events; expose rather than hide it.
-        assert result['cases'][-1]['correct_abstention'] is False
+        # The explicit absent-IP constraint now rejects this old false-evidence case.
+        assert result['cases'][-1]['correct_abstention'] is True
     finally:
         index.close()
 
