@@ -11,8 +11,8 @@
     "reciprocal_rank": 0.9,
     "answerable_cases": 10,
     "unanswerable_cases": 4,
-    "correct_abstentions": 2,
-    "false_evidence_rate": 0.5
+    "correct_abstentions": 3,
+    "false_evidence_rate": 0.25
   },
   "cases": [
     {
@@ -210,13 +210,9 @@
       "id": "near-match-absent-account",
       "query": "SSH login failures for account payroll-root from 203.0.113.99",
       "expected_ids": [],
-      "retrieved_ids": [
-        "AUTH-002",
-        "AUTH-003",
-        "AUTH-001"
-      ],
+      "retrieved_ids": [],
       "answerable": false,
-      "correct_abstention": false
+      "correct_abstention": true
     }
   ],
   "limitation": "Hand-written synthetic queries over seven demo events, created after the demo. Not held out, not representative of production logs, and not a test of LLM answer correctness, prompt-injection safety, or incident detection. An empty expected_ids list means no event is labeled relevant, not that no incident occurred.",
