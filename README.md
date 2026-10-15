@@ -8,7 +8,7 @@ verbatim quotes. Every accepted quote is checked against a retrieved event and
 shown with its event ID and source line. This is deliberately **extractive RAG**,
 not an unrestricted chatbot that writes incident conclusions.
 
-**Status: first working full-stack milestone, not a finished security product.**
+**Status: local 1.0 learning-project milestone complete, not a production security product.**
 The bundled corpus has seven synthetic events. It is a learning/demo corpus,
 not representative telemetry and not proof of real-world detection accuracy.
 
@@ -27,6 +27,9 @@ not representative telemetry and not proof of real-world detection accuracy.
   invented quotes, excessive output or a truncated response.
 - UTF-8 JSONL ingestion bounded to 2 MiB / 2,000 events / 4,000 characters per
   event. One source line is one chunk. IDs must be unique.
+- Deterministic whole-corpus analytics: exact structured filters, record counts,
+  UTC/undated source timeline and JSON export, separate from similarity top-k.
+  [Schema and limits](docs/STRUCTURED_LOGS.md). Evidence/RAG JSON export in the UI.
 - Plain-text log normalization keeps original text and line numbers. It does
   **not** parse timestamps, infer a missing year, classify incidents or read PCAP.
 
@@ -206,8 +209,8 @@ not general account-name matching. Reproduce with the evaluation commands above.
 No SIEM replacement, automatic threat detection, incident verdicts, native PCAP
 analysis, high-volume telemetry ingestion, persistent vector database, hybrid
 fusion, semantic reranking, multilingual evaluation, fine-tuning or production
-security. It cannot reliably answer counts/timelines/"most failures" questions
-by semantic top-k alone. Those need explicit structured analytics.
+security. Semantic top-k cannot answer counts or complete timelines. Use the separate
+structured analytics panel for record counts, never inferred attempt/incident counts.
 
 ### Explicit IP constraints
 
@@ -222,10 +225,12 @@ results. Negation, CIDRs, ranges, IP:port pairs and usernames are not interprete
 Use positive questions about standalone addresses. A matching IP does not make
 an event relevant or prove an incident. Account names still need manual review.
 
-Next work stays on this one project: larger independent evaluation, structured
-log adapters and deterministic analytics, retrieval tuning, better model
-comparison, accessible UI tests, and a beginner walkthrough. A feature is only
-listed as shipped after it runs and its limitations are documented.
+The bounded local 1.0 milestone is complete. Broader adapters, independently
+labeled evaluation and public-product hardening remain explicit future scope,
+not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
+The separate 40-case synthetic regression exposes BGE misses (23/32 answerable
+hit@1 at .7 versus lexical 32/32); both abstained on 8/8 absent-IP cases.
+Do not generalize the tiny demo's perfect semantic result to other logs.
 
 ## Model and tool references
 
