@@ -1,0 +1,599 @@
+{
+  "configuration": {
+    "k": 3,
+    "minimum_similarity": 0.05
+  },
+  "summary": {
+    "hit_at_1": 1.0,
+    "hit_at_k": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.33333333333333337,
+    "reciprocal_rank": 1.0,
+    "answerable_cases": 32,
+    "unanswerable_cases": 8,
+    "correct_abstentions": 8,
+    "false_evidence_rate": 0.0
+  },
+  "cases": [
+    {
+      "id": "positive-001",
+      "query": "For 192.0.2.1, remote shell login was denied?",
+      "expected_ids": [
+        "REG-001"
+      ],
+      "retrieved_ids": [
+        "REG-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-002",
+      "query": "For 192.0.2.2, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-002"
+      ],
+      "retrieved_ids": [
+        "REG-002"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-003",
+      "query": "For 192.0.2.3, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-003"
+      ],
+      "retrieved_ids": [
+        "REG-003"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-004",
+      "query": "For 192.0.2.4, web access was refused?",
+      "expected_ids": [
+        "REG-004"
+      ],
+      "retrieved_ids": [
+        "REG-004"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-005",
+      "query": "For 192.0.2.5, remote shell login was denied?",
+      "expected_ids": [
+        "REG-005"
+      ],
+      "retrieved_ids": [
+        "REG-005"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-006",
+      "query": "For 192.0.2.6, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-006"
+      ],
+      "retrieved_ids": [
+        "REG-006"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-007",
+      "query": "For 192.0.2.7, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-007"
+      ],
+      "retrieved_ids": [
+        "REG-007"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-008",
+      "query": "For 192.0.2.8, web access was refused?",
+      "expected_ids": [
+        "REG-008"
+      ],
+      "retrieved_ids": [
+        "REG-008"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-009",
+      "query": "For 192.0.2.9, remote shell login was denied?",
+      "expected_ids": [
+        "REG-009"
+      ],
+      "retrieved_ids": [
+        "REG-009"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-010",
+      "query": "For 192.0.2.10, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-010"
+      ],
+      "retrieved_ids": [
+        "REG-010"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-011",
+      "query": "For 192.0.2.11, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-011"
+      ],
+      "retrieved_ids": [
+        "REG-011"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-012",
+      "query": "For 192.0.2.12, web access was refused?",
+      "expected_ids": [
+        "REG-012"
+      ],
+      "retrieved_ids": [
+        "REG-012"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-013",
+      "query": "For 192.0.2.13, remote shell login was denied?",
+      "expected_ids": [
+        "REG-013"
+      ],
+      "retrieved_ids": [
+        "REG-013"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-014",
+      "query": "For 192.0.2.14, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-014"
+      ],
+      "retrieved_ids": [
+        "REG-014"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-015",
+      "query": "For 192.0.2.15, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-015"
+      ],
+      "retrieved_ids": [
+        "REG-015"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-016",
+      "query": "For 192.0.2.16, web access was refused?",
+      "expected_ids": [
+        "REG-016"
+      ],
+      "retrieved_ids": [
+        "REG-016"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-017",
+      "query": "For 192.0.2.17, remote shell login was denied?",
+      "expected_ids": [
+        "REG-017"
+      ],
+      "retrieved_ids": [
+        "REG-017"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-018",
+      "query": "For 192.0.2.18, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-018"
+      ],
+      "retrieved_ids": [
+        "REG-018"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-019",
+      "query": "For 192.0.2.19, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-019"
+      ],
+      "retrieved_ids": [
+        "REG-019"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-020",
+      "query": "For 192.0.2.20, web access was refused?",
+      "expected_ids": [
+        "REG-020"
+      ],
+      "retrieved_ids": [
+        "REG-020"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-021",
+      "query": "For 192.0.2.21, remote shell login was denied?",
+      "expected_ids": [
+        "REG-021"
+      ],
+      "retrieved_ids": [
+        "REG-021"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-022",
+      "query": "For 192.0.2.22, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-022"
+      ],
+      "retrieved_ids": [
+        "REG-022"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-023",
+      "query": "For 192.0.2.23, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-023"
+      ],
+      "retrieved_ids": [
+        "REG-023"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-024",
+      "query": "For 192.0.2.24, web access was refused?",
+      "expected_ids": [
+        "REG-024"
+      ],
+      "retrieved_ids": [
+        "REG-024"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-025",
+      "query": "For 192.0.2.25, remote shell login was denied?",
+      "expected_ids": [
+        "REG-025"
+      ],
+      "retrieved_ids": [
+        "REG-025"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-026",
+      "query": "For 192.0.2.26, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-026"
+      ],
+      "retrieved_ids": [
+        "REG-026"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-027",
+      "query": "For 192.0.2.27, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-027"
+      ],
+      "retrieved_ids": [
+        "REG-027"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-028",
+      "query": "For 192.0.2.28, web access was refused?",
+      "expected_ids": [
+        "REG-028"
+      ],
+      "retrieved_ids": [
+        "REG-028"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-029",
+      "query": "For 192.0.2.29, remote shell login was denied?",
+      "expected_ids": [
+        "REG-029"
+      ],
+      "retrieved_ids": [
+        "REG-029"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-030",
+      "query": "For 192.0.2.30, a domain lookup was requested?",
+      "expected_ids": [
+        "REG-030"
+      ],
+      "retrieved_ids": [
+        "REG-030"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-031",
+      "query": "For 192.0.2.31, scheduled archive finished without errors?",
+      "expected_ids": [
+        "REG-031"
+      ],
+      "retrieved_ids": [
+        "REG-031"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "positive-032",
+      "query": "For 192.0.2.32, web access was refused?",
+      "expected_ids": [
+        "REG-032"
+      ],
+      "retrieved_ids": [
+        "REG-032"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "absent-001",
+      "query": "What authentication failure came from 203.0.113.1?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-002",
+      "query": "What authentication failure came from 203.0.113.2?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-003",
+      "query": "What authentication failure came from 203.0.113.3?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-004",
+      "query": "What authentication failure came from 203.0.113.4?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-005",
+      "query": "What authentication failure came from 203.0.113.5?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-006",
+      "query": "What authentication failure came from 203.0.113.6?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-007",
+      "query": "What authentication failure came from 203.0.113.7?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "absent-008",
+      "query": "What authentication failure came from 203.0.113.8?",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    }
+  ],
+  "limitation": "Separate synthetic development regression: 32 fabricated events, 32 answerable queries and 8 absent-IP cases. Written during development, not held out or independently reviewed. Every answerable query names a unique matching IP, so these results mainly test the exact-address constraint, not broad semantic quality. Does not evaluate generation, incident detection or production performance.",
+  "mode": "lexical",
+  "model": "TF-IDF lexical baseline",
+  "corpus_events": 32
+}
