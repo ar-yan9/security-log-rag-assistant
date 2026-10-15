@@ -14,7 +14,8 @@ from retrieval import MAX_FILE_BYTES, MAX_RECORDS
 def normalize(source, destination, prefix='LOG'):
     if not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', prefix):
         raise ValueError('Prefix must contain 1-40 letters, numbers, underscores or dashes')
-    data = Path(source).read_bytes()
+    with Path(source).open('rb') as handle:
+        data = handle.read(MAX_FILE_BYTES + 1)
     if len(data) > MAX_FILE_BYTES:
         raise ValueError('Input exceeds 2 MiB')
     lines = data.decode('utf-8').splitlines()
