@@ -75,9 +75,10 @@ export default function Analytics() {
                 aria-label={label}
                 value={filters[key]}
                 placeholder={placeholder}
-                onChange={(e) =>
-                  setFilters({ ...filters, [key]: e.target.value })
-                }
+                onChange={(e) => {
+                  setData(null);
+                  setFilters({ ...filters, [key]: e.target.value });
+                }}
               />
             </label>
           ))}
