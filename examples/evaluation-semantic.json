@@ -1,0 +1,226 @@
+{
+  "configuration": {
+    "k": 3,
+    "minimum_similarity": 0.7
+  },
+  "summary": {
+    "hit_at_1": 1.0,
+    "hit_at_k": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.3666666666666667,
+    "reciprocal_rank": 1.0,
+    "answerable_cases": 10,
+    "unanswerable_cases": 4,
+    "correct_abstentions": 3,
+    "false_evidence_rate": 0.25
+  },
+  "cases": [
+    {
+      "id": "repeated-auth",
+      "query": "Multiple unsuccessful remote shell authentications",
+      "expected_ids": [
+        "AUTH-002"
+      ],
+      "retrieved_ids": [
+        "AUTH-002",
+        "AUTH-001",
+        "AUTH-003"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "successful-auth",
+      "query": "A successful SSH login following repeated failures",
+      "expected_ids": [
+        "AUTH-003"
+      ],
+      "retrieved_ids": [
+        "AUTH-003",
+        "AUTH-002",
+        "AUTH-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "dns-domain",
+      "query": "Which DNS domain was requested?",
+      "expected_ids": [
+        "DNS-001"
+      ],
+      "retrieved_ids": [
+        "DNS-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "port-pattern",
+      "query": "TCP connection attempts to many destination ports",
+      "expected_ids": [
+        "NET-001"
+      ],
+      "retrieved_ids": [
+        "NET-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "backup-result",
+      "query": "Did the scheduled backup finish without errors?",
+      "expected_ids": [
+        "SAFE-001"
+      ],
+      "retrieved_ids": [
+        "SAFE-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "failed-auth-events",
+      "query": "Show SSH authentication failures",
+      "expected_ids": [
+        "AUTH-001",
+        "AUTH-002"
+      ],
+      "retrieved_ids": [
+        "AUTH-002",
+        "AUTH-003",
+        "AUTH-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.6666666666666666,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "five-failures",
+      "query": "Which event reports five failed logins in one minute?",
+      "expected_ids": [
+        "AUTH-002"
+      ],
+      "retrieved_ids": [
+        "AUTH-002"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "inert-adversarial-text",
+      "query": "Find the inert adversarial log text",
+      "expected_ids": [
+        "UNTRUSTED-001"
+      ],
+      "retrieved_ids": [
+        "UNTRUSTED-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "dns-source",
+      "query": "DNS activity from 198.51.100.20",
+      "expected_ids": [
+        "DNS-001"
+      ],
+      "retrieved_ids": [
+        "DNS-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "backup-completion",
+      "query": "Routine backup completed successfully",
+      "expected_ids": [
+        "SAFE-001"
+      ],
+      "retrieved_ids": [
+        "SAFE-001"
+      ],
+      "answerable": true,
+      "hit_at_1": true,
+      "hit_at_k": true,
+      "recall_at_k": 1.0,
+      "precision_at_k": 0.3333333333333333,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "unrelated-topic",
+      "query": "quantum pineapple tractor recipe",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "missing-endpoint",
+      "query": "Windows Defender malware quarantine result on endpoint WIN-42",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "missing-http",
+      "query": "HTTP POST response status for /checkout payment request",
+      "expected_ids": [],
+      "retrieved_ids": [],
+      "answerable": false,
+      "correct_abstention": true
+    },
+    {
+      "id": "near-match-absent-account",
+      "query": "SSH login failures for account payroll-root from 203.0.113.99",
+      "expected_ids": [],
+      "retrieved_ids": [
+        "AUTH-001",
+        "AUTH-002",
+        "AUTH-003"
+      ],
+      "answerable": false,
+      "correct_abstention": false
+    }
+  ],
+  "limitation": "Hand-written synthetic queries over seven demo events, created after the demo. Not held out, not representative of production logs, and not a test of LLM answer correctness, prompt-injection safety, or incident detection. An empty expected_ids list means no event is labeled relevant, not that no incident occurred.",
+  "mode": "semantic",
+  "model": "BAAI/bge-small-en-v1.5",
+  "corpus_events": 7
+}
