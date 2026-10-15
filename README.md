@@ -138,8 +138,8 @@ These cases were written after the demo; **they are not held out**.
 | Mean recall@3 | 0.90 | 1.00 |
 | Mean precision@3 | 0.333 | 0.367 |
 | Mean reciprocal rank within top 3 | 0.90 | 1.00 |
-| Correct absent-evidence abstentions | 2/4 | 3/4 |
-| False-evidence rate on absent-evidence queries | 50% | 25% |
+| Correct absent-evidence abstentions | 3/4 | 4/4 |
+| False-evidence rate on absent-evidence queries | 25% | 0% |
 
 Hit@k means at least one labeled relevant event occurs in the returned top k.
 Recall@k is the fraction of all relevant labels retrieved. Precision@k divides
@@ -148,14 +148,15 @@ of the first relevant event, or zero for a miss. Answerable metrics exclude
 absent-evidence cases; false-evidence rate counts absent-evidence queries with
 any retrieved event. A category with no cases reports null, never 100%.
 
-**Known failure:** both modes return SSH events for a query about account
-`payroll-root` and source `203.0.113.99`, although neither is in the corpus.
-Semantic similarity does not enforce exact account/IP constraints. The BGE
-result is not evidence about that account or source. Do not use top-k retrieval
-to assert entity-specific facts without checking the quoted source. Thresholds
-have not been tuned to hide this failure. Four absent-evidence cases are too few
-to estimate a real false-positive rate. These numbers do not evaluate the LLM,
-prompt-injection resistance, incident detection, or production usefulness.
+**Regression fixed narrowly:** both modes previously returned SSH events for a
+query about account `payroll-root` and source `203.0.113.99`, although neither
+was in the corpus. The explicit IP constraint now abstains for this query.
+It does not enforce account names: a wrong account with an existing IP can
+still retrieve an irrelevant event. Do not assert entity-specific facts without
+checking the quoted source. Thresholds and labeled cases are unchanged.
+Four absent-evidence cases are too few to estimate a real false-positive rate.
+These numbers do not evaluate LLM correctness, prompt-injection resistance,
+incident detection or production usefulness.
 
 ## Use your own authorized log excerpt
 
@@ -172,6 +173,15 @@ $env:SECURITY_LOG_FILE = (Resolve-Path '.\local-data\events.jsonl').Path
 `normalize.py` refuses to overwrite an existing output. The source is configured
 in the local environment, not as an arbitrary HTTP path. Restart after changing
 the corpus. Indexes are recreated in memory and are not persistent.
+
+## Retrieval guard regression check
+
+The original 14 synthetic cases are unchanged. After the explicit-IP check,
+BGE keeps 10/10 hit@1 and abstains on 4/4 absent-evidence cases (previously 3/4).
+Lexical keeps 9/10 hit@1 and abstains on 3/4 (previously 2/4). These are tiny,
+known development cases, not independent validation. The previously failing
+query names both an absent account and an absent IP; this fixes the IP mismatch,
+not general account-name matching. Reproduce with the evaluation commands above.
 
 ## Security and privacy boundaries
 
@@ -198,6 +208,19 @@ analysis, high-volume telemetry ingestion, persistent vector database, hybrid
 fusion, semantic reranking, multilingual evaluation, fine-tuning or production
 security. It cannot reliably answer counts/timelines/"most failures" questions
 by semantic top-k alone. Those need explicit structured analytics.
+
+### Explicit IP constraints
+
+Lexical and semantic retrieval now require every valid, standalone IPv4/IPv6
+literal in a query to occur in each candidate event before top-k selection.
+IPv6 spellings are canonicalized. An absent address yields no evidence rather
+than a similar event for a different address. Similarity thresholds still apply.
+
+This is a narrow safety check, not a query language: several addresses mean AND
+within one event, so OR queries and cross-event questions can miss relevant
+results. Negation, CIDRs, ranges, IP:port pairs and usernames are not interpreted.
+Use positive questions about standalone addresses. A matching IP does not make
+an event relevant or prove an incident. Account names still need manual review.
 
 Next work stays on this one project: larger independent evaluation, structured
 log adapters and deterministic analytics, retrieval tuning, better model
