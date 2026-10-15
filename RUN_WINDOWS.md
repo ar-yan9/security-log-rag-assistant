@@ -125,3 +125,13 @@ confirm incidents or replace structured log analytics."
 Before describing a part in an interview, run it yourself and explain why its
 limits matter. This guide is setup help, not evidence that the app has run on
 your particular Windows laptop.
+
+## Whole-corpus record counts and timeline
+
+Use the second panel, **Count records. Keep the sources.** Leave filters empty
+for the whole input. Demo metadata labels two SSH-failure records; one record
+summarizes five attempts, so the record count is not an attempt count.
+Exact filters only; timestamps need an offset. Export all matched source rows
+as JSON. See [structured format](docs/STRUCTURED_LOGS.md) and
+[quality/acceptance](docs/QUALITY.md). On 8GB RAM, avoid running Docker/VMs and
+local LLM together; retrieval-only remains useful and does not require Qwen.
