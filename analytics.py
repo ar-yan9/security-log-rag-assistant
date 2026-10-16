@@ -25,11 +25,13 @@ def metadata(value):
                 stamp = datetime.fromisoformat(item.replace("Z", "+00:00"))
                 if stamp.tzinfo is None:
                     raise ValueError()
-            except ValueError as exc:
+                # An offset can move a valid local date outside datetime's
+                # representable UTC range. Reject it like any invalid input.
+                item = stamp.astimezone(timezone.utc).isoformat()
+            except (ValueError, OverflowError) as exc:
                 raise ValueError(
                     "Timestamp needs ISO-8601 and explicit offset"
                 ) from exc
-            item = stamp.astimezone(timezone.utc).isoformat()
         elif key == "source_ip":
             item = str(ipaddress.ip_address(item))
         result[key] = item
