@@ -131,3 +131,42 @@ def test_latest_valid_year_still_before_undated():
         "last",
         "unknown",
     ]
+
+
+UTC_OVERFLOWS = [
+    "0001-01-01T00:00:00+01:00",
+    "9999-12-31T23:59:59-01:00",
+]
+
+
+@pytest.mark.parametrize("stamp", UTC_OVERFLOWS)
+def test_utc_normalization_overflow_is_invalid_input(stamp):
+    with pytest.raises(ValueError, match="Timestamp"):
+        metadata({"timestamp": stamp})
+
+
+@pytest.mark.parametrize("field", ["start", "end"])
+@pytest.mark.parametrize("stamp", UTC_OVERFLOWS)
+def test_utc_overflow_filter_returns_400(field, stamp):
+    with TestClient(app.app) as client:
+        response = client.post("/api/analytics", json={field: stamp})
+        assert response.status_code == 400
+        assert "offset" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("stamp", UTC_OVERFLOWS)
+def test_utc_overflow_corpus_returns_400(tmp_path, monkeypatch, stamp):
+    path = tmp_path / "overflow.jsonl"
+    path.write_text(json.dumps({"id": "boundary", "text": "synthetic event",
+                               "fields": {"timestamp": stamp}}), encoding="utf-8")
+    monkeypatch.setenv("SECURITY_LOG_FILE", str(path))
+    with TestClient(app.app) as client:
+        assert client.post("/api/analytics", json={}).status_code == 400
+
+
+@pytest.mark.parametrize("stamp,expected", [
+    ("0001-01-01T01:00:00+01:00", "0001-01-01T00:00:00+00:00"),
+    ("9999-12-31T22:59:59-01:00", "9999-12-31T23:59:59+00:00"),
+])
+def test_representable_utc_boundaries_still_accepted(stamp, expected):
+    assert metadata({"timestamp": stamp})["timestamp"] == expected
