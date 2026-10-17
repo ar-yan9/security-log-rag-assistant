@@ -15,7 +15,13 @@ Optional explicit metadata:
 an explicit offset, converted to UTC. IPv4/IPv6 addresses are validated and
 canonicalized. Invalid metadata stops ingestion instead of silently guessing.
 Unknown outer fields are ignored. The plain-text normalizer does not invent
-these fields. An owner-supplied adapter/schema mapping is needed for real logs.
+these fields. For common real formats, `ingest.py` fills them conservatively:
+RFC3164 syslog (dated only from your explicit `--year` and `--utc-offset`, never
+guessed), ISO-8601 lines with an explicit offset, and Apache/Nginx combined
+access lines. Extraction is positional: the access-log client field or a `from <address>`
+anchor supplies source addresses, explicit authentication phrases supply
+outcomes, and simple syslog tags supply services. Lines in other formats keep plain
+text with no metadata, and other formats still need an owner-supplied adapter.
 
 Use the UI section **Count records. Keep the sources.** Leave filters blank for
 all records, or use exact case-sensitive service/outcome values and an exact IP.
