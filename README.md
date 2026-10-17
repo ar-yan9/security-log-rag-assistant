@@ -177,6 +177,30 @@ $env:SECURITY_LOG_FILE = (Resolve-Path '.\local-data\events.jsonl').Path
 in the local environment, not as an arbitrary HTTP path. Restart after changing
 the corpus. Indexes are recreated in memory and are not persistent.
 
+## Ingest common real log formats with metadata
+
+`normalize.py` keeps every line as plain text without metadata. When the source
+uses a known format, `ingest.py` additionally extracts confident structured
+fields for the analytics view:
+
+```powershell
+.\.venv\Scripts\python.exe ingest.py .\local-data\auth.log .\local-data\events.jsonl --prefix LAB --year 2026 --utc-offset +05:30
+```
+
+Supported per line: RFC3164 syslog (`Oct 17 12:00:01 host sshd[411]: ...`),
+ISO-8601 prefixed lines with an explicit offset, and Apache/Nginx combined
+access lines. RFC3164 carries no year or timezone, so those records are dated
+only when you pass both `--year` and `--utc-offset` yourself; otherwise they
+stay undated instead of borrowing a guessed date. Extraction is positional and
+conservative: source addresses come only from the access-log client field or a
+`from <address>` anchor, outcomes only from explicit authentication phrases,
+services only from simple syslog tags. HTTP status codes are never mapped to
+outcomes. Lines in other formats are kept as plain text with no metadata:
+unknown stays unknown. Every extracted field is validated through the same
+analytics metadata rules before writing, so invalid values stop ingestion.
+This is not general log schema inference; other formats still need an
+owner-supplied adapter.
+
 ## Retrieval guard regression check
 
 The original 14 synthetic cases are unchanged. After the explicit-IP check,
@@ -225,9 +249,10 @@ results. Negation, CIDRs, ranges, IP:port pairs and usernames are not interprete
 Use positive questions about standalone addresses. A matching IP does not make
 an event relevant or prove an incident. Account names still need manual review.
 
-The bounded local 1.0 milestone is complete. Broader adapters, independently
-labeled evaluation and public-product hardening remain explicit future scope,
-not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
+The bounded local 1.0 milestone is complete. Ingestion now covers RFC3164
+and ISO-8601 syslog plus Apache/Nginx combined access lines. Adapters for
+further formats, independently labeled evaluation and public-product hardening
+remain explicit future scope, not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
 The separate 40-case synthetic regression exposes BGE misses (23/32 answerable
 hit@1 at .7 versus lexical 32/32); both abstained on 8/8 absent-IP cases.
 Do not generalize the tiny demo's perfect semantic result to other logs.
