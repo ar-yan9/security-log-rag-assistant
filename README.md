@@ -187,6 +187,19 @@ fields for the analytics view:
 .\.venv\Scripts\python.exe ingest.py .\local-data\auth.log .\local-data\events.jsonl --prefix LAB --year 2026 --utc-offset +05:30
 ```
 
+Try it on the shipped synthetic samples (documentation-range addresses only):
+
+```powershell
+.\.venv\Scripts\python.exe ingest.py .\examples\sample-auth.log .\local-data\events.jsonl --prefix AUTH --year 2026 --utc-offset +05:30
+```
+
+[examples/sample-auth.log](examples/sample-auth.log) and
+[examples/sample-access.log](examples/sample-access.log) ingest to
+[examples/expected-auth.jsonl](examples/expected-auth.jsonl) and
+[examples/expected-access.jsonl](examples/expected-access.jsonl). Tests compare
+the adapter output against these files exactly, so any behavior change updates
+them deliberately, never silently.
+
 Supported per line: RFC3164 syslog (`Oct 17 12:00:01 host sshd[411]: ...`),
 ISO-8601 prefixed lines with an explicit offset, and Apache/Nginx combined
 access lines. RFC3164 carries no year or timezone, so those records are dated
