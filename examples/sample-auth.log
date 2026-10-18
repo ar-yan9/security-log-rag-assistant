@@ -1,0 +1,8 @@
+Oct 17 11:58:02 labhost sshd[380]: Failed password for invalid user admin from 192.0.2.10 port 51122 ssh2
+Oct 17 11:59:14 labhost sshd[395]: Failed password for invalid user admin from 192.0.2.10 port 51140 ssh2
+Oct 17 12:00:01 labhost sshd[411]: Failed password for invalid user root from 192.0.2.10 port 51166 ssh2
+Oct 17 12:05:44 labhost sshd[420]: Accepted password for aryan from 192.0.2.20 port 51230 ssh2
+Oct 17 12:06:10 labhost CRON[455]: pam_unix(cron:session): session opened for user aryan
+2026-10-17T12:10:00+05:30 labhost sshd[470]: Failed password for invalid user guest from 203.0.113.7 port 40112 ssh2
+a line that matches no known format and must stay metadata-free
+Oct 17 12:15:26 labhost sshd[501]: connection closed by authenticating user aryan 192.0.2.20 port 51240 ssh2 [preauth]
