@@ -9,3 +9,4 @@ models/
 .env
 local-data/
 *.log
+!examples/*.log
