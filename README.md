@@ -193,10 +193,12 @@ Try it on the shipped synthetic samples (documentation-range addresses only):
 .\.venv\Scripts\python.exe ingest.py .\examples\sample-auth.log .\local-data\events.jsonl --prefix AUTH --year 2026 --utc-offset +05:30
 ```
 
-[examples/sample-auth.log](examples/sample-auth.log) and
-[examples/sample-access.log](examples/sample-access.log) ingest to
-[examples/expected-auth.jsonl](examples/expected-auth.jsonl) and
-[examples/expected-access.jsonl](examples/expected-access.jsonl). Tests compare
+[examples/sample-auth.log](examples/sample-auth.log),
+[examples/sample-access.log](examples/sample-access.log) and
+[examples/sample-gateway.log](examples/sample-gateway.log) ingest to
+[examples/expected-auth.jsonl](examples/expected-auth.jsonl),
+[examples/expected-access.jsonl](examples/expected-access.jsonl) and
+[examples/expected-gateway.jsonl](examples/expected-gateway.jsonl). Tests compare
 the adapter output against these files exactly, so any behavior change updates
 them deliberately, never silently.
 
