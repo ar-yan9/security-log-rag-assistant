@@ -1,0 +1,8 @@
+{"id": "GW-000001", "text": "Oct 18 09:14:02 gateway sshd[901]: Failed password for invalid user admin from 2001:db8::10 port 40412 ssh2", "fields": {"service": "sshd", "source_ip": "2001:db8::10", "outcome": "failure"}}
+{"id": "GW-000002", "text": "Oct 18 09:14:20 gateway sshd[901]: error: maximum authentication attempts exceeded for root from 2001:db8::10 port 40412 ssh2 [preauth]", "fields": {"service": "sshd", "source_ip": "2001:db8::10"}}
+{"id": "GW-000003", "text": "Oct 18 09:15:01 gateway sudo: pam_unix(sudo:auth): authentication failure; logname=aryan uid=1000 euid=0 tty=/dev/pts/0 ruser=aryan rhost= user=aryan", "fields": {"service": "sudo", "outcome": "failure"}}
+{"id": "GW-000004", "text": "Oct 18 09:15:44 gateway sudo: aryan : TTY=pts/0 ; PWD=/home/aryan ; USER=root ; COMMAND=/usr/bin/journalctl -u sshd", "fields": {"service": "sudo"}}
+{"id": "GW-000005", "text": "Oct 18 09:16:10 gateway sshd[944]: Accepted publickey for aryan from 2001:db8::20 port 51500 ssh2", "fields": {"service": "sshd", "source_ip": "2001:db8::20"}}
+{"id": "GW-000006", "text": "Oct 18 09:16:12 gateway sshd[944]: pam_unix(sshd:session): session opened for user aryan by (uid=0)", "fields": {"service": "sshd"}}
+{"id": "GW-000007", "text": "Oct 18 09:17:03 gateway kernel: [UFW BLOCK] IN=eth0 OUT= MAC=02:00:00:00:00:01 SRC=198.51.100.23 DST=192.0.2.5 LEN=60 SYN", "fields": {"service": "kernel"}}
+{"id": "GW-000008", "text": "a line that matches no known format and must stay metadata-free"}
