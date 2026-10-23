@@ -41,6 +41,17 @@ describe('evidence workbench',()=>{
     render(<App/>);runQuery();await screen.findByText('Model-selected quotes');
     expect(screen.getByText('AUTH-002 · source line 2')).toBeInTheDocument();
   });
+  it('lets the user cancel a slow local request',async()=>{
+    global.fetch=vi.fn()
+      .mockResolvedValueOnce({ok:true,json:async()=>({retrieval_mode:'lexical'})})
+      .mockImplementationOnce((_url,options)=>new Promise((_resolve,reject)=>{
+        options.signal.addEventListener('abort',()=>reject(new DOMException('Aborted','AbortError')));
+      }));
+    render(<App/>);runQuery();
+    fireEvent.click(await screen.findByRole('button',{name:'Cancel request'}));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Request timed out or was cancelled');
+    expect(screen.getByRole('button',{name:'Find evidence ↗'})).toBeEnabled();
+  });
   it('shows errors without stale results',async()=>{
     mockResult({},false);render(<App/>);runQuery();
     expect(await screen.findByRole('alert')).toHaveTextContent('Local corpus or model is unavailable');
