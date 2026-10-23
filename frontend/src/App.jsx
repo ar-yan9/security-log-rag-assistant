@@ -172,13 +172,15 @@ export default function App() {
                 </select>
               </label>
               <span className="count">{question.length}/1000</span>
-              <button type="submit" disabled={busy || !question.trim()}>
-                {busy
-                  ? "Checking local evidence…"
-                  : mode === "ask"
-                    ? "Ask local model ↗"
-                    : "Find evidence ↗"}
-              </button>
+              {busy ? (
+                <button type="button" onClick={() => abort.current?.abort()}>
+                  Cancel request
+                </button>
+              ) : (
+                <button type="submit" disabled={!question.trim()}>
+                  {mode === "ask" ? "Ask local model ↗" : "Find evidence ↗"}
+                </button>
+              )}
             </div>
           </form>
           <div className="suggestions">
