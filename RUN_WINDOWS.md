@@ -133,5 +133,5 @@ for the whole input. Demo metadata labels two SSH-failure records; one record
 summarizes five attempts, so the record count is not an attempt count.
 Exact filters only; timestamps need an offset. Export all matched source rows
 as JSON. See [structured format](docs/STRUCTURED_LOGS.md) and
-[quality/acceptance](docs/QUALITY.md). On 8GB RAM, avoid running Docker/VMs and
-local LLM together; retrieval-only remains useful and does not require Qwen.
+[quality/acceptance](docs/QUALITY.md). For larger local models, leave enough free RAM and
+close heavy apps as needed; retrieval-only remains useful and does not require Qwen.
