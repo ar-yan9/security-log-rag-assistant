@@ -1,0 +1,7 @@
+type=USER_AUTH msg=audit(1792238401.123:901): pid=1410 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0 msg='op=PAM:authentication grantors=pam_securetty acct="admin" exe="/usr/sbin/sshd" hostname=192.0.2.10 addr=192.0.2.10 terminal=ssh res=failed'
+type=USER_AUTH msg=audit(1792238421.456:902): pid=1412 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0 msg='op=PAM:authentication grantors=pam_securetty acct="root" exe="/usr/sbin/sshd" hostname=192.0.2.10 addr=192.0.2.10 terminal=ssh res=failed'
+type=USER_LOGIN msg=audit(1792238445.000:903): pid=1415 uid=0 auid=1000 ses=3 subj=system_u:system_r:sshd_t:s0 msg='op=login id=1000 exe="/usr/sbin/sshd" hostname=192.0.2.10 addr=192.0.2.10 terminal=/dev/pts/0 res=success'
+type=USER_AUTH msg=audit(1792238470.210:904): pid=1501 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:local_login_t:s0 msg='op=PAM:authentication grantors=pam_securetty acct="guest" exe="/usr/bin/login" hostname=lab-pc addr=? terminal=tty1 res=failed'
+type=AVC msg=audit(1792238553.441:905): avc:  denied  { read } for  pid=1520 comm="cat" name="shadow" dev="sda1" ino=131073 scontext=system_u:system_r:unconfined_t:s0 tcontext=system_u:object_r:shadow_t:s0 tclass=file permissive=0
+type=CONFIG_CHANGE msg=audit(1792238582.102:906): auid=1000 ses=2 subj=system_u:object_r:auditctl_t:s0 op=add_rule key="logins" list=4 res=1
+this line matches no known format and must stay metadata-free
