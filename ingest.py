@@ -10,11 +10,14 @@ Supported line formats, detected per line:
   A timestamp without an explicit offset is not used; the record stays undated.
 - Apache/Nginx combined access lines:
   ``192.0.2.10 - - [17/Oct/2026:12:00:01 +0530] "GET /admin HTTP/1.1" 403 231 ...``
+- Linux auditd lines: ``type=USER_AUTH msg=audit(1761638401.123:456): ... res=failed``.
+  The msg=audit epoch is already UTC, so no dating flags are needed.
 
 Extraction is positional and conservative. source_ip comes only from the
-access-log client field or a syslog ``from <address>`` anchor, outcome only
-from explicit authentication phrases, and service only from a simple syslog
-tag. Lines in any other format are preserved as plain text records with no
+access-log client field, an auditd ``addr=`` field or a syslog ``from
+<address>`` anchor, outcome only from explicit authentication phrases or an
+auditd ``res=`` result, and service only from a simple syslog tag or the
+auditd envelope. Lines in any other format are preserved as plain text records with no
 metadata: unknown stays unknown. Every extracted field is validated through
 analytics.metadata before writing, so invalid values stop ingestion instead of
 silently guessing. This is not a PCAP parser and runs no shell commands.
@@ -40,6 +43,9 @@ ACCESS = re.compile(
     r'^(\S+) - \S+ \[([^\]]+)\] "[A-Z]+ [^"]*" \d{3} '
 )
 FROM_IP = re.compile(r'\bfrom (\S+)')
+AUDIT = re.compile(r'^type=\S+ msg=audit\((\d{10})(?:\.(\d{1,6}))?:\d+\): ?(.*)$')
+AUDIT_RES = re.compile(r'\bres=(success|failed)\b')
+AUDIT_ADDR = re.compile(r'\baddr=(\S+)')
 MONTHS = {
     'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
     'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12,
@@ -88,6 +94,27 @@ def parse_line(text, year=None, offset=None):
     """Return a fields dict for one line, possibly empty. Never raises."""
     fields = {}
     message = text
+    audit = AUDIT.match(text)
+    if audit:
+        seconds, fraction, message = audit.groups()
+        try:
+            stamp = datetime.fromtimestamp(int(seconds), tz=timezone.utc)
+            if fraction:
+                stamp = stamp.replace(microsecond=int(fraction.ljust(6, '0')))
+            fields['timestamp'] = metadata({'timestamp': stamp.isoformat()})['timestamp']
+        except (ValueError, OverflowError, OSError):
+            pass
+        fields['service'] = 'auditd'
+        result = AUDIT_RES.search(message)
+        if result:
+            fields['outcome'] = 'success' if result.group(1) == 'success' else 'failure'
+        address = AUDIT_ADDR.search(message)
+        if address:
+            try:
+                fields['source_ip'] = str(ipaddress.ip_address(address.group(1)))
+            except ValueError:
+                pass
+        return metadata(fields) if fields else {}
     match = ISO_LINE.match(text)
     if match:
         stamp, zone, _host, tag, message = match.groups()
@@ -140,7 +167,7 @@ def parse_line(text, year=None, offset=None):
         if address:
             fields['source_ip'] = address
     outcome = _outcome(message)
-    if outcome:
+    if outcome and 'outcome' not in fields:
         fields['outcome'] = outcome
     # Final validation: any invalid extracted value stops ingestion loudly.
     return metadata(fields) if fields else {}
