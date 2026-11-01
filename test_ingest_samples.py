@@ -58,3 +58,22 @@ def test_golden_gateway_output_feeds_analytics():
     failed = summarize(rows, outcome='failure', source_ip='2001:db8::10')
     assert failed['matching_records'] == 1
     assert result['corpus_records'] == 8
+
+
+def test_sample_auditd_log_matches_golden(tmp_path):
+    dest = tmp_path / 'auditd.jsonl'
+    summary = ingest(EXAMPLES / 'sample-auditd.log', dest, prefix='AUDIT')
+    assert summary == {'records': 7, 'dated': 6, 'addressed': 3}
+    assert dest.read_text(encoding='utf-8') == golden(EXAMPLES / 'expected-auditd.jsonl')
+
+
+def test_golden_auditd_output_feeds_analytics():
+    from analytics import summarize
+    from retrieval import read_records
+    rows = read_records(EXAMPLES / 'expected-auditd.jsonl')
+    result = summarize(rows, service='auditd', outcome='failure', source_ip='192.0.2.10')
+    assert result['matching_records'] == 2
+    # The local tty failure has no address, the AVC/CONFIG_CHANGE lines have no
+    # outcome, and the unstructured line has no fields.
+    assert result['structured_records'] == 6
+    assert result['corpus_records'] == 7
