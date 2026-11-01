@@ -197,3 +197,70 @@ def test_cli_reports_summary(tmp_path, capsys):
     # Second run refuses to overwrite through the CLI too.
     assert main([str(source), str(tmp_path / 'out.jsonl')]) == 2
     assert 'Ingestion stopped' in capsys.readouterr().out
+
+
+AUDIT_FAILURE = "type=USER_AUTH msg=audit(1792238401.123:901): pid=1410 uid=0 msg='op=PAM:authentication acct=\"admin\" exe=\"/usr/sbin/sshd\" hostname=192.0.2.10 addr=192.0.2.10 terminal=ssh res=failed'"
+AUDIT_SUCCESS = "type=USER_LOGIN msg=audit(1792238445.000:903): pid=1415 uid=0 msg='op=login id=1000 exe=\"/usr/sbin/sshd\" hostname=192.0.2.10 addr=192.0.2.10 terminal=/dev/pts/0 res=success'"
+AUDIT_LOCAL = "type=USER_AUTH msg=audit(1792238470.210:904): pid=1501 uid=0 msg='op=PAM:authentication acct=\"guest\" exe=\"/usr/bin/login\" hostname=lab-pc addr=? terminal=tty1 res=failed'"
+AUDIT_AVC = 'type=AVC msg=audit(1792238553.441:905): avc:  denied  { read } for  pid=1520 comm="cat" name="shadow" permissive=0'
+AUDIT_CONFIG = 'type=CONFIG_CHANGE msg=audit(1792238582.102:906): auid=1000 ses=2 op=add_rule key="logins" list=4 res=1'
+
+
+def test_audit_failure_extracts_confident_fields(tmp_path):
+    source = write(tmp_path, AUDIT_FAILURE + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert summary == {'records': 1, 'dated': 1, 'addressed': 1}
+    assert row['fields'] == {
+        'timestamp': '2026-10-17T12:00:01.123000+00:00',
+        'service': 'auditd',
+        'outcome': 'failure',
+        'source_ip': '192.0.2.10',
+    }
+
+
+def test_audit_epoch_needs_no_dating_flags(tmp_path):
+    # Epoch timestamps are already UTC; --year/--utc-offset stay irrelevant.
+    source = write(tmp_path, AUDIT_SUCCESS + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert summary['dated'] == 1
+    assert row['fields']['timestamp'] == '2026-10-17T12:00:45+00:00'
+    assert row['fields']['outcome'] == 'success'
+
+
+def test_audit_local_login_keeps_address_unknown(tmp_path):
+    # addr=? and a non-IP hostname never become a source address.
+    source = write(tmp_path, AUDIT_LOCAL + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert summary['addressed'] == 0
+    assert 'source_ip' not in row['fields']
+    assert row['fields']['outcome'] == 'failure'
+
+
+def test_audit_without_result_keeps_outcome_unknown(tmp_path):
+    # res=1 is a numeric rule result, not an authentication outcome.
+    for line in (AUDIT_AVC, AUDIT_CONFIG):
+        source = write(tmp_path, line + '\n')
+        ingest(source, tmp_path / 'out.jsonl')
+        row = read_records(tmp_path / 'out.jsonl')[0]
+        assert 'outcome' not in row['fields']
+        assert row['fields']['service'] == 'auditd'
+        (tmp_path / 'out.jsonl').unlink()
+
+
+def test_audit_invalid_addr_stays_unknown(tmp_path):
+    line = AUDIT_FAILURE.replace('addr=192.0.2.10', 'addr=999.0.0.1')
+    source = write(tmp_path, line + '\n')
+    ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert 'source_ip' not in row['fields']
+
+
+def test_audit_ipv6_addr_canonicalized(tmp_path):
+    line = AUDIT_FAILURE.replace('addr=192.0.2.10', 'addr=2001:DB8::10')
+    source = write(tmp_path, line + '\n')
+    ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert row['fields']['source_ip'] == '2001:db8::10'
