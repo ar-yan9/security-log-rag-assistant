@@ -194,22 +194,28 @@ Try it on the shipped synthetic samples (documentation-range addresses only):
 ```
 
 [examples/sample-auth.log](examples/sample-auth.log),
-[examples/sample-access.log](examples/sample-access.log) and
-[examples/sample-gateway.log](examples/sample-gateway.log) ingest to
+[examples/sample-access.log](examples/sample-access.log),
+[examples/sample-gateway.log](examples/sample-gateway.log) and
+[examples/sample-auditd.log](examples/sample-auditd.log) ingest to
 [examples/expected-auth.jsonl](examples/expected-auth.jsonl),
-[examples/expected-access.jsonl](examples/expected-access.jsonl) and
-[examples/expected-gateway.jsonl](examples/expected-gateway.jsonl). Tests compare
+[examples/expected-access.jsonl](examples/expected-access.jsonl),
+[examples/expected-gateway.jsonl](examples/expected-gateway.jsonl) and
+[examples/expected-auditd.jsonl](examples/expected-auditd.jsonl). Tests compare
 the adapter output against these files exactly, so any behavior change updates
 them deliberately, never silently.
 
 Supported per line: RFC3164 syslog (`Oct 17 12:00:01 host sshd[411]: ...`),
-ISO-8601 prefixed lines with an explicit offset, and Apache/Nginx combined
-access lines. RFC3164 carries no year or timezone, so those records are dated
+ISO-8601 prefixed lines with an explicit offset, Apache/Nginx combined
+access lines, and Linux auditd lines
+(`type=USER_AUTH msg=audit(1792238401.123:901): ... res=failed`). RFC3164
+carries no year or timezone, so those records are dated
 only when you pass both `--year` and `--utc-offset` yourself; otherwise they
-stay undated instead of borrowing a guessed date. Extraction is positional and
-conservative: source addresses come only from the access-log client field or a
-`from <address>` anchor, outcomes only from explicit authentication phrases,
-services only from simple syslog tags. HTTP status codes are never mapped to
+stay undated instead of borrowing a guessed date. The auditd msg=audit epoch is
+already UTC, so those lines need no dating flags. Extraction is positional and
+conservative: source addresses come only from the access-log client field, an
+auditd `addr=` field or a `from <address>` anchor, outcomes only from explicit
+authentication phrases or an auditd `res=success|failed` result, services only
+from simple syslog tags or the auditd envelope. HTTP status codes are never mapped to
 outcomes. Lines in other formats are kept as plain text with no metadata:
 unknown stays unknown. Every extracted field is validated through the same
 analytics metadata rules before writing, so invalid values stop ingestion.
@@ -265,9 +271,9 @@ Use positive questions about standalone addresses. A matching IP does not make
 an event relevant or prove an incident. Account names still need manual review.
 
 The bounded local 1.0 milestone is complete. Ingestion now covers RFC3164
-and ISO-8601 syslog plus Apache/Nginx combined access lines. Adapters for
-further formats, independently labeled evaluation and public-product hardening
-remain explicit future scope, not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
+and ISO-8601 syslog, Apache/Nginx combined access lines and Linux auditd
+lines. Adapters for further formats, independently labeled evaluation and
+public-product hardening remain explicit future scope, not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
 The separate 40-case synthetic regression exposes BGE misses (23/32 answerable
 hit@1 at .7 versus lexical 32/32); both abstained on 8/8 absent-IP cases.
 Do not generalize the tiny demo's perfect semantic result to other logs.
