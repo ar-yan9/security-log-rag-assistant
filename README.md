@@ -271,8 +271,9 @@ Use positive questions about standalone addresses. A matching IP does not make
 an event relevant or prove an incident. Account names still need manual review.
 
 The bounded local 1.0 milestone is complete. Ingestion now covers RFC3164
-and ISO-8601 syslog, Apache/Nginx combined access lines and Linux auditd
-lines. Adapters for further formats, independently labeled evaluation and
+and ISO-8601 syslog, Apache/Nginx combined access lines, Linux auditd
+lines and systemd journal JSON exports (`journalctl -o json`). Adapters for
+further formats, independently labeled evaluation and
 public-product hardening remain explicit future scope, not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
 The separate 40-case synthetic regression exposes BGE misses (23/32 answerable
 hit@1 at .7 versus lexical 32/32); both abstained on 8/8 absent-IP cases.
