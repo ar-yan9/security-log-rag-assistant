@@ -12,6 +12,11 @@ Supported line formats, detected per line:
   ``192.0.2.10 - - [17/Oct/2026:12:00:01 +0530] "GET /admin HTTP/1.1" 403 231 ...``
 - Linux auditd lines: ``type=USER_AUTH msg=audit(1761638401.123:456): ... res=failed``.
   The msg=audit epoch is already UTC, so no dating flags are needed.
+- systemd journal JSON lines (``journalctl -o json``): a JSON object with a
+  non-empty ``MESSAGE`` string and at least one journal marker
+  (``__REALTIME_TIMESTAMP``, ``SYSLOG_IDENTIFIER`` or ``_SYSTEMD_UNIT``).
+  The realtime timestamp is microseconds since the UTC epoch, so no dating
+  flags are needed. Arbitrary JSON without these markers stays plain text.
 
 Extraction is positional and conservative. source_ip comes only from the
 access-log client field, an auditd ``addr=`` field or a syslog ``from
@@ -90,78 +95,125 @@ def _from_address(message):
         return None
 
 
-def parse_line(text, year=None, offset=None):
-    """Return a fields dict for one line, possibly empty. Never raises."""
+def _journal(text):
+    """Return (fields, message) for a journald JSON line, else None.
+
+    Recognizes ``journalctl -o json`` output conservatively: a JSON object with
+    a non-empty MESSAGE string and at least one journal marker. Fields keep the
+    same vocabulary as every other adapter; outcome and source addresses still
+    come only from the shared explicit-phrase and ``from <address>`` anchors on
+    the MESSAGE text. Non-journal JSON is not parsed further and stays plain
+    text. Never raises.
+    """
+    if not text.startswith('{'):
+        return None
+    try:
+        obj = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(obj, dict):
+        return None
+    message = obj.get('MESSAGE')
+    if not isinstance(message, str) or not message.strip():
+        return None
+    if not any(key in obj for key in
+               ('__REALTIME_TIMESTAMP', 'SYSLOG_IDENTIFIER', '_SYSTEMD_UNIT')):
+        return None
     fields = {}
-    message = text
-    audit = AUDIT.match(text)
-    if audit:
-        seconds, fraction, message = audit.groups()
+    raw = obj.get('__REALTIME_TIMESTAMP')
+    if isinstance(raw, str) and raw.isdigit():
         try:
-            stamp = datetime.fromtimestamp(int(seconds), tz=timezone.utc)
-            if fraction:
-                stamp = stamp.replace(microsecond=int(fraction.ljust(6, '0')))
+            micros = int(raw)
+            stamp = datetime.fromtimestamp(micros // 1000000, tz=timezone.utc)
+            stamp = stamp.replace(microsecond=micros % 1000000)
             fields['timestamp'] = metadata({'timestamp': stamp.isoformat()})['timestamp']
         except (ValueError, OverflowError, OSError):
             pass
-        fields['service'] = 'auditd'
-        result = AUDIT_RES.search(message)
-        if result:
-            fields['outcome'] = 'success' if result.group(1) == 'success' else 'failure'
-        address = AUDIT_ADDR.search(message)
-        if address:
-            try:
-                fields['source_ip'] = str(ipaddress.ip_address(address.group(1)))
-            except ValueError:
-                pass
-        return metadata(fields) if fields else {}
-    match = ISO_LINE.match(text)
-    if match:
-        stamp, zone, _host, tag, message = match.groups()
-        if zone:
-            candidate = stamp + ('+00:00' if zone == 'Z' else zone)
-            try:
-                fields['timestamp'] = metadata(
-                    {'timestamp': candidate.replace('Z', '+00:00')}
-                )['timestamp']
-            except ValueError:
-                pass
-        service = _service(tag)
+    for key in ('SYSLOG_IDENTIFIER', '_SYSTEMD_UNIT'):
+        value = obj.get(key)
+        service = _service(value) if isinstance(value, str) else None
         if service:
             fields['service'] = service
+            break
+    return fields, message
+
+
+def parse_line(text, year=None, offset=None):
+    """Return a fields dict for one line, possibly empty. Never raises."""
+    journal = _journal(text)
+    if journal is not None:
+        fields, message = journal
     else:
-        match = SYSLOG.match(text)
-        if match:
-            month, day, hour, minute, second, _host, tag, message = match.groups()
-            if year is not None and offset is not None:
+        fields = {}
+        message = text
+        audit = AUDIT.match(text)
+        if audit:
+            seconds, fraction, message = audit.groups()
+            try:
+                stamp = datetime.fromtimestamp(int(seconds), tz=timezone.utc)
+                if fraction:
+                    stamp = stamp.replace(microsecond=int(fraction.ljust(6, '0')))
+                fields['timestamp'] = metadata({'timestamp': stamp.isoformat()})['timestamp']
+            except (ValueError, OverflowError, OSError):
+                pass
+            fields['service'] = 'auditd'
+            result = AUDIT_RES.search(message)
+            if result:
+                fields['outcome'] = 'success' if result.group(1) == 'success' else 'failure'
+            address = AUDIT_ADDR.search(message)
+            if address:
                 try:
-                    stamp = datetime(
-                        year, MONTHS[month], int(day), int(hour), int(minute), int(second),
-                        tzinfo=offset,
-                    )
+                    fields['source_ip'] = str(ipaddress.ip_address(address.group(1)))
+                except ValueError:
+                    pass
+            return metadata(fields) if fields else {}
+        match = ISO_LINE.match(text)
+        if match:
+            stamp, zone, _host, tag, message = match.groups()
+            if zone:
+                candidate = stamp + ('+00:00' if zone == 'Z' else zone)
+                try:
                     fields['timestamp'] = metadata(
-                        {'timestamp': stamp.isoformat()}
+                        {'timestamp': candidate.replace('Z', '+00:00')}
                     )['timestamp']
-                except (ValueError, OverflowError):
+                except ValueError:
                     pass
             service = _service(tag)
             if service:
                 fields['service'] = service
         else:
-            match = ACCESS.match(text)
+            match = SYSLOG.match(text)
             if match:
-                client, stamp = match.groups()
-                try:
-                    fields['source_ip'] = str(ipaddress.ip_address(client))
-                except ValueError:
-                    pass
-                try:
-                    parsed = datetime.strptime(stamp, '%d/%b/%Y:%H:%M:%S %z')
-                    fields['timestamp'] = metadata(
-                        {'timestamp': parsed.isoformat()}
-                    )['timestamp']
-                except (ValueError, OverflowError):
-                    pass
+                month, day, hour, minute, second, _host, tag, message = match.groups()
+                if year is not None and offset is not None:
+                    try:
+                        stamp = datetime(
+                            year, MONTHS[month], int(day), int(hour), int(minute), int(second),
+                            tzinfo=offset,
+                        )
+                        fields['timestamp'] = metadata(
+                            {'timestamp': stamp.isoformat()}
+                        )['timestamp']
+                    except (ValueError, OverflowError):
+                        pass
+                service = _service(tag)
+                if service:
+                    fields['service'] = service
+            else:
+                match = ACCESS.match(text)
+                if match:
+                    client, stamp = match.groups()
+                    try:
+                        fields['source_ip'] = str(ipaddress.ip_address(client))
+                    except ValueError:
+                        pass
+                    try:
+                        parsed = datetime.strptime(stamp, '%d/%b/%Y:%H:%M:%S %z')
+                        fields['timestamp'] = metadata(
+                            {'timestamp': parsed.isoformat()}
+                        )['timestamp']
+                    except (ValueError, OverflowError):
+                        pass
     if 'source_ip' not in fields:
         address = _from_address(message)
         if address:
