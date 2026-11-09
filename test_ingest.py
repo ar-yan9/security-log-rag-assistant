@@ -264,3 +264,60 @@ def test_audit_ipv6_addr_canonicalized(tmp_path):
     ingest(source, tmp_path / 'out.jsonl')
     row = read_records(tmp_path / 'out.jsonl')[0]
     assert row['fields']['source_ip'] == '2001:db8::10'
+
+
+JOURNAL_LINE = '{"__REALTIME_TIMESTAMP":"1792238401123456","SYSLOG_IDENTIFIER":"sshd","PRIORITY":"3","MESSAGE":"Failed password for invalid user admin from 192.0.2.10 port 51234 ssh2"}'
+
+
+def test_journal_line_extracts_confident_fields(tmp_path):
+    source = write(tmp_path, JOURNAL_LINE + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert summary == {'records': 1, 'dated': 1, 'addressed': 1}
+    assert row['fields'] == {
+        'timestamp': '2026-10-17T12:00:01.123456+00:00',
+        'service': 'sshd',
+        'outcome': 'failure',
+        'source_ip': '192.0.2.10',
+    }
+
+
+def test_journal_unit_fallback_without_identifier(tmp_path):
+    line = json.dumps({'_SYSTEMD_UNIT': 'cron.service',
+                       'MESSAGE': '(root) CMD (run-parts /etc/cron.hourly)'})
+    assert parse_line(line) == {'service': 'cron.service'}
+
+
+def test_journal_bad_timestamp_stays_undated(tmp_path):
+    line = json.dumps({'__REALTIME_TIMESTAMP': 'not-a-number',
+                       'SYSLOG_IDENTIFIER': 'sshd',
+                       'MESSAGE': 'Failed password for root from 2001:db8::10 port 22 ssh2'})
+    row = parse_line(line)
+    assert 'timestamp' not in row
+    assert row['service'] == 'sshd'
+    assert row['source_ip'] == '2001:db8::10'
+    assert row['outcome'] == 'failure'
+
+
+def test_journal_message_drives_outcome_and_address():
+    line = json.dumps({'SYSLOG_IDENTIFIER': 'sshd',
+                       'MESSAGE': 'Accepted password for aryan from 192.0.2.20 port 22 ssh2'})
+    row = parse_line(line)
+    assert row['outcome'] == 'success'
+    assert row['source_ip'] == '192.0.2.20'
+    assert 'timestamp' not in row
+
+
+def test_non_journal_json_stays_plain_text(tmp_path):
+    for line in ('{"level":"info","msg":"application log line"}',
+                 '{"MESSAGE":"no journal marker here"}',
+                 '{"__REALTIME_TIMESTAMP":"1792238401000000", broken'):
+        assert parse_line(line) == {}, line
+
+
+def test_journal_line_mixes_with_other_formats(tmp_path):
+    source = write(tmp_path, SYSLOG_LINE + '\n' + JOURNAL_LINE + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl', year=2026, utc_offset='+05:30')
+    rows = read_records(tmp_path / 'out.jsonl')
+    assert summary == {'records': 2, 'dated': 2, 'addressed': 2}
+    assert rows[1]['fields']['timestamp'] == '2026-10-17T12:00:01.123456+00:00'
