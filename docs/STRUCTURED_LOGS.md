@@ -18,12 +18,17 @@ Unknown outer fields are ignored. The plain-text normalizer does not invent
 these fields. For common real formats, `ingest.py` fills them conservatively:
 RFC3164 syslog (dated only from your explicit `--year` and `--utc-offset`, never
 guessed), ISO-8601 lines with an explicit offset, Apache/Nginx combined
-access lines, and Linux auditd lines (the msg=audit epoch is already UTC, so no
-dating flags are needed). Extraction is positional: the access-log client field,
+access lines, Linux auditd lines (the msg=audit epoch is already UTC, so no
+dating flags are needed), and systemd journal JSON lines (`journalctl -o json`):
+a JSON object with a non-empty `MESSAGE` and at least one journal marker
+(`__REALTIME_TIMESTAMP`, `SYSLOG_IDENTIFIER` or `_SYSTEMD_UNIT`); the realtime
+microseconds epoch is already UTC, so no dating flags are needed, and arbitrary
+JSON without these markers stays plain text. Extraction is positional: the access-log client field,
 an auditd `addr=` field or a `from <address>`
 anchor supplies source addresses, explicit authentication phrases or an auditd
 `res=success|failed` result supply
-outcomes, and simple syslog tags or the auditd envelope supply services. Lines in other formats keep plain
+outcomes, and simple syslog tags, the auditd envelope or journal
+`SYSLOG_IDENTIFIER`/`_SYSTEMD_UNIT` fields supply services. Lines in other formats keep plain
 text with no metadata, and other formats still need an owner-supplied adapter.
 
 Use the UI section **Count records. Keep the sources.** Leave filters blank for
