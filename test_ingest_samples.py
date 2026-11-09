@@ -77,3 +77,21 @@ def test_golden_auditd_output_feeds_analytics():
     # outcome, and the unstructured line has no fields.
     assert result['structured_records'] == 6
     assert result['corpus_records'] == 7
+
+
+def test_sample_journal_log_matches_golden(tmp_path):
+    dest = tmp_path / 'journal.jsonl'
+    summary = ingest(EXAMPLES / 'sample-journal.log', dest, prefix='JRN')
+    assert summary == {'records': 8, 'dated': 3, 'addressed': 3}
+    assert dest.read_text(encoding='utf-8') == golden(EXAMPLES / 'expected-journal.jsonl')
+
+
+def test_golden_journal_output_feeds_analytics():
+    from analytics import summarize
+    from retrieval import read_records
+    rows = read_records(EXAMPLES / 'expected-journal.jsonl')
+    result = summarize(rows, service='sshd', outcome='failure', source_ip='192.0.2.10')
+    assert result['matching_records'] == 1
+    # Five rows carry structured fields; the plain JSON and malformed lines do not.
+    assert result['structured_records'] == 5
+    assert result['corpus_records'] == 8
