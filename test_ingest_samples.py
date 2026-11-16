@@ -95,3 +95,23 @@ def test_golden_journal_output_feeds_analytics():
     # Five rows carry structured fields; the plain JSON and malformed lines do not.
     assert result['structured_records'] == 5
     assert result['corpus_records'] == 8
+
+
+def test_sample_rfc5424_log_matches_golden(tmp_path):
+    dest = tmp_path / 'rfc5424.jsonl'
+    summary = ingest(EXAMPLES / 'sample-rfc5424.log', dest, prefix='R5424')
+    assert summary == {'records': 8, 'dated': 4, 'addressed': 4}
+    assert dest.read_text(encoding='utf-8') == golden(EXAMPLES / 'expected-rfc5424.jsonl')
+
+
+def test_golden_rfc5424_output_feeds_analytics():
+    from analytics import summarize
+    from retrieval import read_records
+    rows = read_records(EXAMPLES / 'expected-rfc5424.jsonl')
+    result = summarize(rows, service='sshd', outcome='failure', source_ip='192.0.2.10')
+    assert result['matching_records'] == 1
+    # Seven rows carry structured fields: the version-2 line keeps only the
+    # shared message anchors, the broken-SD line only its header fields, and
+    # the kernel line stays plain text.
+    assert result['structured_records'] == 7
+    assert result['corpus_records'] == 8
