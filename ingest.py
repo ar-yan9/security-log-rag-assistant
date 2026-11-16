@@ -17,12 +17,20 @@ Supported line formats, detected per line:
   (``__REALTIME_TIMESTAMP``, ``SYSLOG_IDENTIFIER`` or ``_SYSTEMD_UNIT``).
   The realtime timestamp is microseconds since the UTC epoch, so no dating
   flags are needed. Arbitrary JSON without these markers stays plain text.
+- RFC5424 syslog lines:
+  ``<34>1 2026-10-17T12:00:01Z host sshd 501 ID47 [sd] message``. Only
+  version ``1`` is recognized. The header timestamp is used only with its
+  explicit offset, so no dating flags are needed; a ``-`` or offset-less
+  timestamp stays undated. Service comes only from a valid APP-NAME field.
+  Structured data is skipped, never mined for metadata, and when it does
+  not terminate the message is treated as absent rather than guessed.
 
 Extraction is positional and conservative. source_ip comes only from the
-access-log client field, an auditd ``addr=`` field or a syslog ``from
-<address>`` anchor, outcome only from explicit authentication phrases or an
-auditd ``res=`` result, and service only from a simple syslog tag or the
-auditd envelope. Lines in any other format are preserved as plain text records with no
+access-log client field, an auditd ``addr=`` field or a ``from
+<address>`` message anchor, outcome only from explicit authentication phrases or an
+auditd ``res=`` result, and service only from a simple syslog tag, the
+auditd envelope, a journal identifier/unit field or an RFC5424 APP-NAME.
+Lines in any other format are preserved as plain text records with no
 metadata: unknown stays unknown. Every extracted field is validated through
 analytics.metadata before writing, so invalid values stop ingestion instead of
 silently guessing. This is not a PCAP parser and runs no shell commands.
@@ -48,6 +56,8 @@ ACCESS = re.compile(
     r'^(\S+) - \S+ \[([^\]]+)\] "[A-Z]+ [^"]*" \d{3} '
 )
 FROM_IP = re.compile(r'\bfrom (\S+)')
+RFC5424 = re.compile(r'^<\d{1,3}>1 (\S+) (\S+) (\S+) (\S+) (\S+)(?: (.*))?$')
+RFC5424_SD = re.compile(r'^(\[[^\]]*\]\s*)+')
 AUDIT = re.compile(r'^type=\S+ msg=audit\((\d{10})(?:\.(\d{1,6}))?:\d+\): ?(.*)$')
 AUDIT_RES = re.compile(r'\bres=(success|failed)\b')
 AUDIT_ADDR = re.compile(r'\baddr=(\S+)')
@@ -138,11 +148,56 @@ def _journal(text):
     return fields, message
 
 
+def _rfc5424(text):
+    """Return (fields, message) for an RFC5424 syslog line, else None.
+
+    Recognizes version 1 only: ``<PRI>1 TIMESTAMP HOST APP PROCID MSGID SD
+    MSG``. The timestamp is used only with its explicit offset, so no dating
+    flags are needed; NILVALUE (``-``) and offset-less values stay undated.
+    Service comes only from a valid APP-NAME. Structured data is skipped,
+    never mined: when it does not terminate, the message is treated as
+    absent rather than guessed, so phrase/address anchors cannot fire on
+    header bytes. Outcome and source addresses still come only from the
+    shared explicit-phrase and ``from <address>`` anchors on the message.
+    Never raises.
+    """
+    match = RFC5424.match(text)
+    if not match:
+        return None
+    stamp_raw, _host, app, _procid, _msgid, rest = match.groups()
+    fields = {}
+    if stamp_raw != '-':
+        try:
+            parsed = datetime.fromisoformat(stamp_raw.replace('Z', '+00:00'))
+        except ValueError:
+            parsed = None
+        if parsed is not None and parsed.tzinfo is not None and parsed.utcoffset() is not None:
+            try:
+                fields['timestamp'] = metadata({'timestamp': parsed.isoformat()})['timestamp']
+            except ValueError:
+                pass
+    if app != '-':
+        service = _service(app)
+        if service:
+            fields['service'] = service
+    rest = rest or ''
+    if rest.startswith('-'):
+        message = rest[1:].lstrip(' ')
+    elif rest.startswith('['):
+        sd = RFC5424_SD.match(rest)
+        message = rest[sd.end():].lstrip(' ') if sd else ''
+    else:
+        message = ''
+    return fields, message.lstrip('\ufeff')
+
+
 def parse_line(text, year=None, offset=None):
     """Return a fields dict for one line, possibly empty. Never raises."""
-    journal = _journal(text)
-    if journal is not None:
-        fields, message = journal
+    parsed = _journal(text)
+    if parsed is None:
+        parsed = _rfc5424(text)
+    if parsed is not None:
+        fields, message = parsed
     else:
         fields = {}
         message = text
