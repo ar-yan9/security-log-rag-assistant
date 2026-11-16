@@ -23,12 +23,19 @@ dating flags are needed), and systemd journal JSON lines (`journalctl -o json`):
 a JSON object with a non-empty `MESSAGE` and at least one journal marker
 (`__REALTIME_TIMESTAMP`, `SYSLOG_IDENTIFIER` or `_SYSTEMD_UNIT`); the realtime
 microseconds epoch is already UTC, so no dating flags are needed, and arbitrary
-JSON without these markers stays plain text. Extraction is positional: the access-log client field,
+JSON without these markers stays plain text. RFC5424 syslog lines
+(`<34>1 2026-10-17T12:00:01Z host sshd 501 ID47 [sd] message`) are also
+recognized, version 1 only: the header timestamp is used only with its
+explicit offset, so no dating flags are needed, and a `-` or offset-less
+timestamp stays undated; structured data is skipped, never mined for
+metadata, and when it does not terminate the message is treated as absent
+rather than guessed. Extraction is positional: the access-log client field,
 an auditd `addr=` field or a `from <address>`
 anchor supplies source addresses, explicit authentication phrases or an auditd
 `res=success|failed` result supply
-outcomes, and simple syslog tags, the auditd envelope or journal
-`SYSLOG_IDENTIFIER`/`_SYSTEMD_UNIT` fields supply services. Lines in other formats keep plain
+outcomes, and simple syslog tags, the auditd envelope, journal
+`SYSLOG_IDENTIFIER`/`_SYSTEMD_UNIT` fields or the RFC5424 APP-NAME field
+supply services. Lines in other formats keep plain
 text with no metadata, and other formats still need an owner-supplied adapter.
 
 Use the UI section **Count records. Keep the sources.** Leave filters blank for
