@@ -321,3 +321,111 @@ def test_journal_line_mixes_with_other_formats(tmp_path):
     rows = read_records(tmp_path / 'out.jsonl')
     assert summary == {'records': 2, 'dated': 2, 'addressed': 2}
     assert rows[1]['fields']['timestamp'] == '2026-10-17T12:00:01.123456+00:00'
+
+
+RFC5424_LINE = ('<34>1 2026-10-17T12:00:01.123456Z edge1 sshd 501 ID47 '
+                '[auth@32473 event="login"] Failed password for invalid user admin '
+                'from 192.0.2.10 port 51234 ssh2')
+
+
+def test_rfc5424_line_extracts_confident_fields(tmp_path):
+    source = write(tmp_path, RFC5424_LINE + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl')
+    row = read_records(tmp_path / 'out.jsonl')[0]
+    assert summary == {'records': 1, 'dated': 1, 'addressed': 1}
+    assert row['fields'] == {
+        'timestamp': '2026-10-17T12:00:01.123456+00:00',
+        'service': 'sshd',
+        'source_ip': '192.0.2.10',
+        'outcome': 'failure',
+    }
+
+
+def test_rfc5424_numeric_offset_converts_to_utc():
+    line = ('<13>1 2026-10-17T17:30:21+05:30 edge1 sshd 502 ID47 - '
+            'Accepted password for demo from 192.0.2.10 port 51235 ssh2')
+    row = parse_line(line)
+    assert row['timestamp'] == '2026-10-17T12:00:21+00:00'
+    assert row['outcome'] == 'success'
+    assert row['source_ip'] == '192.0.2.10'
+
+
+def test_rfc5424_nilvalue_timestamp_stays_undated():
+    line = ('<165>1 - edge1 sudo 99 ID32 - '
+            'demo : TTY=pts/0 ; PWD=/home/demo ; USER=root ; COMMAND=/usr/bin/apt update')
+    row = parse_line(line)
+    assert row == {'service': 'sudo'}
+
+
+def test_rfc5424_offset_less_timestamp_stays_undated():
+    line = ('<34>1 2026-10-17T12:00:01 edge1 sshd 503 ID47 - '
+            'Failed password for root from 2001:db8::10 port 22 ssh2')
+    row = parse_line(line)
+    assert 'timestamp' not in row
+    assert row['service'] == 'sshd'
+    assert row['outcome'] == 'failure'
+    assert row['source_ip'] == '2001:db8::10'
+
+
+def test_rfc5424_nilvalue_app_name_keeps_service_unknown():
+    line = ('<34>1 2026-10-17T12:00:01Z edge1 - 501 ID47 - '
+            'Failed password for root from 192.0.2.10 port 22 ssh2')
+    row = parse_line(line)
+    assert 'service' not in row
+    assert row['timestamp'] == '2026-10-17T12:00:01+00:00'
+    assert row['outcome'] == 'failure'
+
+
+def test_rfc5424_other_versions_stay_plain_text():
+    for line in ('<34>2 2026-10-17T12:00:01Z edge1 sshd 501 ID47 - some message',
+                 '<34> 2026-10-17T12:00:01Z edge1 sshd 501 ID47 - some message'):
+        assert parse_line(line) == {}, line
+
+
+def test_rfc5424_unrecognized_version_keeps_header_unknown():
+    # Not a recognized format: no header parsing, so no timestamp or service.
+    # The shared message anchors apply to the raw line like any plain text.
+    line = ('<34>2 2026-10-17T12:00:01Z edge1 sshd 501 ID47 - '
+            'Failed password for root from 192.0.2.10 port 22 ssh2')
+    row = parse_line(line)
+    assert row == {'outcome': 'failure', 'source_ip': '192.0.2.10'}
+
+
+def test_rfc5424_unterminated_structured_data_suppresses_message_anchors():
+    line = ('<34>1 2026-10-17T12:00:02Z edge1 sshd 505 ID47 [broken SD '
+            'Failed password for root from 192.0.2.10 port 22 ssh2')
+    row = parse_line(line)
+    assert row == {'timestamp': '2026-10-17T12:00:02+00:00', 'service': 'sshd'}
+
+
+def test_rfc5424_multiple_sd_elements_are_skipped():
+    line = ('<34>1 2026-10-17T12:00:03Z edge1 sshd 506 ID47 '
+            '[a@1 k="v"][b@2 x="y"] Failed password for root '
+            'from 192.0.2.10 port 22 ssh2')
+    row = parse_line(line)
+    assert row['outcome'] == 'failure'
+    assert row['source_ip'] == '192.0.2.10'
+
+
+def test_rfc5424_message_without_sd():
+    line = ('<34>1 2026-10-17T12:00:04Z edge1 sshd 507 ID47 - '
+            'Accepted password for aryan from 192.0.2.20 port 22 ssh2')
+    row = parse_line(line)
+    assert row['outcome'] == 'success'
+    assert row['source_ip'] == '192.0.2.20'
+
+
+def test_rfc5424_bom_message_still_anchors():
+    line = ('<34>1 2026-10-17T12:00:05Z edge1 sshd 508 ID47 - '
+            '\ufeffFailed password for root from 192.0.2.10 port 22 ssh2')
+    row = parse_line(line)
+    assert row['outcome'] == 'failure'
+    assert row['source_ip'] == '192.0.2.10'
+
+
+def test_rfc5424_line_mixes_with_other_formats(tmp_path):
+    source = write(tmp_path, SYSLOG_LINE + '\n' + RFC5424_LINE + '\n')
+    summary = ingest(source, tmp_path / 'out.jsonl', year=2026, utc_offset='+05:30')
+    rows = read_records(tmp_path / 'out.jsonl')
+    assert summary == {'records': 2, 'dated': 2, 'addressed': 2}
+    assert rows[1]['fields']['timestamp'] == '2026-10-17T12:00:01.123456+00:00'
