@@ -115,3 +115,21 @@ def test_golden_rfc5424_output_feeds_analytics():
     # the kernel line stays plain text.
     assert result['structured_records'] == 7
     assert result['corpus_records'] == 8
+def test_sample_suricata_log_matches_golden(tmp_path):
+    dest = tmp_path / 'suricata.jsonl'
+    summary = ingest(EXAMPLES / 'sample-suricata.log', dest, prefix='EVE')
+    assert summary == {'records': 6, 'dated': 4, 'addressed': 4}
+    assert dest.read_text(encoding='utf-8') == golden(EXAMPLES / 'expected-suricata.jsonl')
+
+
+def test_golden_suricata_output_feeds_analytics():
+    from analytics import summarize
+    from retrieval import read_records
+    rows = read_records(EXAMPLES / 'expected-suricata.jsonl')
+    result = summarize(rows, service='suricata-alert', source_ip='192.0.2.10')
+    assert result['matching_records'] == 1
+    # Five rows carry structured fields: the offset-less alert stays undated,
+    # the stats event has no source address, and the non-EVE JSON line stays
+    # plain text. No row carries an outcome, because no anchors fire on EVE.
+    assert result['structured_records'] == 5
+    assert result['corpus_records'] == 6
