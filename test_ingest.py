@@ -429,3 +429,74 @@ def test_rfc5424_line_mixes_with_other_formats(tmp_path):
     rows = read_records(tmp_path / 'out.jsonl')
     assert summary == {'records': 2, 'dated': 2, 'addressed': 2}
     assert rows[1]['fields']['timestamp'] == '2026-10-17T12:00:01.123456+00:00'
+def test_eve_line_extracts_confident_fields(tmp_path):
+    line = ('{"timestamp":"2026-10-17T12:00:01.123456+0000","event_type":"alert",'
+            '"src_ip":"192.0.2.10","dest_ip":"198.51.100.7","alert":{"signature":"ET SCAN Synthetic"}}')
+    dest = tmp_path / 'out.jsonl'
+    source = tmp_path / 'in.log'
+    source.write_text(line + '\n')
+    summary = ingest(source, dest)
+    assert summary == {'records': 1, 'dated': 1, 'addressed': 1}
+    fields = json.loads(dest.read_text().splitlines()[0])['fields']
+    assert fields == {'timestamp': '2026-10-17T12:00:01.123456+00:00',
+                      'service': 'suricata-alert', 'source_ip': '192.0.2.10'}
+
+
+def test_eve_numeric_offset_converts_to_utc():
+    line = ('{"timestamp":"2026-10-17T17:30:21+0530","event_type":"flow",'
+            '"src_ip":"192.0.2.10"}')
+    fields = parse_line(line)
+    assert fields['timestamp'] == '2026-10-17T12:00:21+00:00'
+    assert fields['service'] == 'suricata-flow'
+
+
+def test_eve_offset_less_timestamp_stays_undated():
+    line = '{"timestamp":"2026-10-17T12:00:01","event_type":"alert","src_ip":"192.0.2.10"}'
+    fields = parse_line(line)
+    assert 'timestamp' not in fields
+    assert fields['service'] == 'suricata-alert'
+
+
+def test_eve_signature_text_drives_no_anchors():
+    # Alert signatures are rule descriptions, not event prose: no outcome or
+    # address anchors may fire on EVE JSON, even when the text matches them.
+    line = ('{"timestamp":"2026-10-17T12:00:01+0000","event_type":"alert",'
+            '"src_ip":"192.0.2.10","alert":{"signature":"Failed password from 192.0.2.99 detected"}}')
+    fields = parse_line(line)
+    assert 'outcome' not in fields
+    assert fields['source_ip'] == '192.0.2.10'
+
+
+def test_eve_missing_src_ip_stays_unaddressed():
+    line = '{"timestamp":"2026-10-17T12:00:01+0000","event_type":"stats"}'
+    fields = parse_line(line)
+    assert 'source_ip' not in fields
+    assert fields['service'] == 'suricata-stats'
+
+
+def test_eve_invalid_src_ip_stays_unaddressed():
+    line = '{"timestamp":"2026-10-17T12:00:01+0000","event_type":"alert","src_ip":"not-an-ip"}'
+    fields = parse_line(line)
+    assert 'source_ip' not in fields
+
+
+def test_non_eve_json_stays_plain_text(tmp_path):
+    line = '{"timestamp":"2026-10-17T12:00:01+0000","message":"no event type here"}'
+    fields = parse_line(line)
+    assert fields == {}
+    line = '{"event_type":"alert"}'
+    assert parse_line(line) == {}
+
+
+def test_eve_line_mixes_with_other_formats(tmp_path):
+    source = tmp_path / 'in.log'
+    source.write_text(
+        '{"timestamp":"2026-10-17T12:00:01+0000","event_type":"alert","src_ip":"192.0.2.10"}\n'
+        'Oct 17 12:00:02 host sshd[1]: Failed password for root from 192.0.2.11 port 1 ssh2\n'
+    )
+    dest = tmp_path / 'out.jsonl'
+    summary = ingest(source, dest, year=2026, utc_offset='+05:30')
+    assert summary == {'records': 2, 'dated': 2, 'addressed': 2}
+    rows = [json.loads(row) for row in dest.read_text().splitlines()]
+    assert rows[0]['fields']['service'] == 'suricata-alert'
+    assert rows[1]['fields']['service'] == 'sshd'
