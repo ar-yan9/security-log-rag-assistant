@@ -24,12 +24,20 @@ Supported line formats, detected per line:
   timestamp stays undated. Service comes only from a valid APP-NAME field.
   Structured data is skipped, never mined for metadata, and when it does
   not terminate the message is treated as absent rather than guessed.
+- Suricata EVE JSON lines (``eve.json``): a JSON object with a non-empty
+  ``event_type`` string and a ``timestamp`` string. The header timestamp is
+  used only with its explicit offset, so no dating flags are needed; an
+  offset-less or missing timestamp stays undated. source_ip comes only from
+  a valid ``src_ip`` field, and service is ``suricata-<event_type>`` when the
+  event type is a simple tag. No phrase or address anchors are applied to EVE
+  JSON, so outcome stays unknown. JSON without these markers stays plain text.
 
 Extraction is positional and conservative. source_ip comes only from the
-access-log client field, an auditd ``addr=`` field or a ``from
-<address>`` message anchor, outcome only from explicit authentication phrases or an
-auditd ``res=`` result, and service only from a simple syslog tag, the
-auditd envelope, a journal identifier/unit field or an RFC5424 APP-NAME.
+access-log client field, an auditd ``addr=`` field, a Suricata ``src_ip``
+field or a ``from <address>`` message anchor, outcome only from explicit
+authentication phrases or an auditd ``res=`` result, and service only from
+a simple syslog tag, the auditd envelope, a journal identifier/unit field,
+an RFC5424 APP-NAME or a Suricata event type.
 Lines in any other format are preserved as plain text records with no
 metadata: unknown stays unknown. Every extracted field is validated through
 analytics.metadata before writing, so invalid values stop ingestion instead of
@@ -191,11 +199,64 @@ def _rfc5424(text):
     return fields, message.lstrip('\ufeff')
 
 
+def _eve(text):
+    """Return (fields, message) for a Suricata EVE JSON line, else None.
+
+    Recognizes ``eve.json`` output conservatively: a JSON object with a
+    non-empty ``event_type`` string and a ``timestamp`` string. The timestamp
+    is used only with its explicit offset; an offset-less value stays
+    undated. source_ip comes only from a valid ``src_ip`` field. service is
+    ``suricata-<event_type>`` when the event type is a simple tag. The
+    returned anchor message is empty: no phrase or address anchors are
+    applied to EVE JSON, because alert signatures are rule descriptions, not
+    event prose, so outcome stays unknown. JSON without these markers is not
+    parsed further and stays plain text. Never raises.
+    """
+    if not text.startswith('{'):
+        return None
+    try:
+        obj = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(obj, dict):
+        return None
+    event_type = obj.get('event_type')
+    stamp_raw = obj.get('timestamp')
+    if (not isinstance(event_type, str) or not event_type.strip()
+            or not isinstance(stamp_raw, str)):
+        return None
+    fields = {}
+    try:
+        # EVE writes numeric offsets without a colon (+0000); normalize them so
+        # the parse does not depend on the interpreter's ISO-8601 strictness.
+        candidate = re.sub(r'([+-]\d{2})(\d{2})$', r'\1:\2', stamp_raw.replace('Z', '+00:00'))
+        parsed = datetime.fromisoformat(candidate)
+    except ValueError:
+        parsed = None
+    if parsed is not None and parsed.tzinfo is not None and parsed.utcoffset() is not None:
+        try:
+            fields['timestamp'] = metadata({'timestamp': parsed.isoformat()})['timestamp']
+        except ValueError:
+            pass
+    service = _service('suricata-' + event_type.strip())
+    if service:
+        fields['service'] = service
+    source = obj.get('src_ip')
+    if isinstance(source, str):
+        try:
+            fields['source_ip'] = str(ipaddress.ip_address(source))
+        except ValueError:
+            pass
+    return fields, ''
+
+
 def parse_line(text, year=None, offset=None):
     """Return a fields dict for one line, possibly empty. Never raises."""
     parsed = _journal(text)
     if parsed is None:
         parsed = _rfc5424(text)
+    if parsed is None:
+        parsed = _eve(text)
     if parsed is not None:
         fields, message = parsed
     else:
