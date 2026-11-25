@@ -197,14 +197,16 @@ Try it on the shipped synthetic samples (documentation-range addresses only):
 [examples/sample-access.log](examples/sample-access.log),
 [examples/sample-gateway.log](examples/sample-gateway.log),
 [examples/sample-auditd.log](examples/sample-auditd.log),
-[examples/sample-journal.log](examples/sample-journal.log) and
-[examples/sample-rfc5424.log](examples/sample-rfc5424.log) ingest to
+[examples/sample-journal.log](examples/sample-journal.log),
+[examples/sample-rfc5424.log](examples/sample-rfc5424.log) and
+[examples/sample-suricata.log](examples/sample-suricata.log) ingest to
 [examples/expected-auth.jsonl](examples/expected-auth.jsonl),
 [examples/expected-access.jsonl](examples/expected-access.jsonl),
 [examples/expected-gateway.jsonl](examples/expected-gateway.jsonl),
 [examples/expected-auditd.jsonl](examples/expected-auditd.jsonl),
-[examples/expected-journal.jsonl](examples/expected-journal.jsonl) and
-[examples/expected-rfc5424.jsonl](examples/expected-rfc5424.jsonl). Tests compare
+[examples/expected-journal.jsonl](examples/expected-journal.jsonl),
+[examples/expected-rfc5424.jsonl](examples/expected-rfc5424.jsonl) and
+[examples/expected-suricata.jsonl](examples/expected-suricata.jsonl). Tests compare
 the adapter output against these files exactly, so any behavior change updates
 them deliberately, never silently.
 
@@ -212,21 +214,28 @@ Supported per line: RFC3164 syslog (`Oct 17 12:00:01 host sshd[411]: ...`),
 ISO-8601 prefixed lines with an explicit offset, Apache/Nginx combined
 access lines, Linux auditd lines
 (`type=USER_AUTH msg=audit(1792238401.123:901): ... res=failed`), systemd
-journal JSON lines (`journalctl -o json`) and RFC5424 syslog lines
-(`<34>1 2026-10-17T12:00:01Z host sshd 501 ID47 [sd] ...`). RFC3164
+journal JSON lines (`journalctl -o json`), RFC5424 syslog lines
+(`<34>1 2026-10-17T12:00:01Z host sshd 501 ID47 [sd] ...`) and Suricata EVE
+JSON lines (`eve.json`: a JSON object with a non-empty `event_type` and a
+`timestamp`). RFC3164
 carries no year or timezone, so those records are dated
 only when you pass both `--year` and `--utc-offset` yourself; otherwise they
 stay undated instead of borrowing a guessed date. The auditd msg=audit epoch is
 already UTC, so those lines need no dating flags, and neither do journal
 realtime epochs or RFC5424 header timestamps, which carry their own explicit
 offset (a `-` or offset-less RFC5424 timestamp stays undated). Only RFC5424
-version 1 is recognized. Extraction is positional and
+version 1 is recognized. EVE timestamps likewise need their explicit offset
+(numeric offsets like `+0000` are normalized); an offset-less EVE timestamp
+stays undated. Extraction is positional and
 conservative: source addresses come only from the access-log client field, an
-auditd `addr=` field or a `from <address>` anchor, outcomes only from explicit
-authentication phrases or an auditd `res=success|failed` result, services only
-from simple syslog tags, the auditd envelope, journal identifier/unit fields
-or the RFC5424 APP-NAME field. RFC5424 structured data is skipped, never mined
-for metadata. HTTP status codes are never mapped to
+auditd `addr=` field, a Suricata `src_ip` field or a `from <address>` anchor,
+outcomes only from explicit authentication phrases or an auditd
+`res=success|failed` result, services only
+from simple syslog tags, the auditd envelope, journal identifier/unit fields,
+the RFC5424 APP-NAME field or a Suricata event type
+(`suricata-<event_type>`). RFC5424 structured data is skipped, never mined
+for metadata, and no phrase or address anchors are applied to EVE JSON, so
+EVE outcomes stay unknown. HTTP status codes are never mapped to
 outcomes. Lines in other formats are kept as plain text with no metadata:
 unknown stays unknown. Every extracted field is validated through the same
 analytics metadata rules before writing, so invalid values stop ingestion.
@@ -283,8 +292,8 @@ an event relevant or prove an incident. Account names still need manual review.
 
 The bounded local 1.0 milestone is complete. Ingestion now covers RFC3164
 and ISO-8601 syslog, Apache/Nginx combined access lines, Linux auditd
-lines, systemd journal JSON exports (`journalctl -o json`) and RFC5424
-syslog lines. Adapters for
+lines, systemd journal JSON exports (`journalctl -o json`), RFC5424
+syslog lines and Suricata EVE JSON lines. Adapters for
 further formats, independently labeled evaluation and
 public-product hardening remain explicit future scope, not shipped claims. See [acceptance and honest quality results](docs/QUALITY.md).
 The separate 40-case synthetic regression exposes BGE misses (23/32 answerable
