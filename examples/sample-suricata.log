@@ -1,0 +1,6 @@
+{"timestamp":"2026-10-17T12:00:01.123456+0000","flow_id":1001,"event_type":"alert","src_ip":"192.0.2.10","src_port":51234,"dest_ip":"198.51.100.7","dest_port":22,"proto":"TCP","alert":{"signature":"ET SCAN Synthetic SSH brute force attempt","category":"Attempted Information Leak","severity":2}}
+{"timestamp":"2026-10-17T17:30:21+0530","flow_id":1002,"event_type":"flow","src_ip":"192.0.2.11","dest_ip":"198.51.100.7","proto":"TCP","flow":{"pkts_toserver":8,"pkts_toclient":6}}
+{"timestamp":"2026-10-17T12:00:45+0000","event_type":"stats","stats":{"uptime":3600}}
+{"timestamp":"2026-10-17T12:01:05","flow_id":1003,"event_type":"alert","src_ip":"192.0.2.12","alert":{"signature":"ET POLICY Synthetic undated alert"}}
+{"timestamp":"2026-10-17T12:01:30+0000","event_type":"alert","src_ip":"192.0.2.13","alert":{"signature":"Failed password from 192.0.2.99 detected"}}
+{"timestamp":"2026-10-17T12:02:00+0000","message":"a JSON line that is not Suricata EVE"}
