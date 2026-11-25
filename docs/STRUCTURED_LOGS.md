@@ -29,13 +29,21 @@ recognized, version 1 only: the header timestamp is used only with its
 explicit offset, so no dating flags are needed, and a `-` or offset-less
 timestamp stays undated; structured data is skipped, never mined for
 metadata, and when it does not terminate the message is treated as absent
-rather than guessed. Extraction is positional: the access-log client field,
-an auditd `addr=` field or a `from <address>`
+rather than guessed. Suricata EVE JSON lines (`eve.json`) are also
+recognized: a JSON object with a non-empty `event_type` string and a
+`timestamp` string; the timestamp is used only with its explicit offset
+(numeric offsets like `+0000` are normalized), so no dating flags are needed,
+and an offset-less timestamp stays undated. The source address comes only
+from a valid `src_ip` field, the service is `suricata-<event_type>`, and no
+phrase or address anchors are applied to EVE JSON because alert signatures
+are rule descriptions, not event prose - so EVE outcomes stay unknown.
+Extraction is positional: the access-log client field,
+an auditd `addr=` field, a Suricata `src_ip` field or a `from <address>`
 anchor supplies source addresses, explicit authentication phrases or an auditd
 `res=success|failed` result supply
 outcomes, and simple syslog tags, the auditd envelope, journal
-`SYSLOG_IDENTIFIER`/`_SYSTEMD_UNIT` fields or the RFC5424 APP-NAME field
-supply services. Lines in other formats keep plain
+`SYSLOG_IDENTIFIER`/`_SYSTEMD_UNIT` fields, the RFC5424 APP-NAME field or a
+Suricata event type supply services. Lines in other formats keep plain
 text with no metadata, and other formats still need an owner-supplied adapter.
 
 Use the UI section **Count records. Keep the sources.** Leave filters blank for
